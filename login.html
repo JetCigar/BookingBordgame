@@ -3,9 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login</title>
+    <title>login</title> 
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>test</h1>
+    <div class="login-box">
+    <h2>เข้าสู่ระบบ</h2> <!--Login heading-->
+    <form action="action_page.php" method="post">
+
+        <!-- input ID user -->
+      <div class="input-box">
+        <label for="username"><b>ไอดีผู้ใช้</b></label>
+        <input type="text" name="username" placeholder="กรุณากรอกไอดีผู้ใช้" required>
+      </div>
+
+      <!-- input password -->
+      <div class="input-box">
+        <label for="psw"><b>รหัสผ่าน</b></label>
+        <input type="password" name="password" placeholder="กรุณากรอกรหัสผ่าน" required>
+      </div>
+
+
+      <button type="submit" class="btn">Login</button>
+    </form>
+  </div>
 </body>
 </html>
