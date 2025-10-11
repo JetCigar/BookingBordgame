@@ -17,7 +17,7 @@ $stmt = $pdo->prepare("SELECT username, password_hash FROM authentication WHERE 
 $stmt->execute([$_POST['username']]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($user) {
+if ($user && hash_equals($user['password_hash'], $_POST['password'])) {
     session_regenerate_id(true);
     $_SESSION['username'] = $user['username'];
     header('Location: /BookingBordgame/login/dashboard.php');
@@ -26,7 +26,6 @@ if ($user) {
     echo "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
 }
 ?>
-
 
 </body>
 </html>

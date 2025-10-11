@@ -8,11 +8,12 @@ session_start();
 // 2) ตรวจว่ามีการล็อกอินหรือยัง (มี user_id ใน session ไหม)
 //    ถ้าไม่มีกลับไปหน้า login
 // if (empty($_SESSION['user_id'])) {
-//   header("Location: login.html");
+//   header("Location: ../login.html");
 //   exit;
 // }
 
 // 3) ดึงข้อมูลที่เก็บไว้ตอนล็อกอิน (สำหรับแสดงผล)
+
 //    *หุ้มด้วย htmlspecialchars เพื่อกัน XSS เสมอ*
 $displayName = htmlspecialchars($_SESSION['display_name'] ?? '');
 $username    = htmlspecialchars($_SESSION['username'] ?? '');
