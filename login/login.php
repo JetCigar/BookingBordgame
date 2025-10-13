@@ -8,7 +8,6 @@
 <body>
 
 
-
 <?php
 session_start();
 $pdo = new PDO('mysql:host=localhost;dbname=bookingbordgame;charset=utf8mb4','root','');
