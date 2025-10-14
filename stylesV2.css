@@ -1,0 +1,400 @@
+/* =========================================================
+   ตัวแปรหลัก
+   ========================================================= */
+:root{
+  --container-w: 1400px;     /* กว้างของกล่องหลัก */
+  --container-h: 880px;      /* สูงของกล่องหลัก */
+  --slide-time: .6s;         /* เวลาเลื่อนฟอร์ม */
+  --fade-time:  .4s;         /* เวลาเฟด */
+  --label-size: 20px;        /* ขนาด label */
+  --label-weight: 800;       /* ความหนา label */
+
+        /* เน้นสีและระยะเวลาแอนิเมชั่นของ label */
+  --accent: #1a86b8;               /* โทนเดียวกับพื้นหลัง toggle */
+  --anim-bounce: 600ms;            /* ระยะเวลา bounce ของ label */
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box
+}
+body{
+  display:flex;justify-content:center;align-items:center;
+  min-height:100vh;
+  background:linear-gradient(90deg,#EBECED,#D1DAE0);
+  font-family:'Kanit', system-ui, -apple-system, Segoe UI, Roboto, "TH Sarabun New", Arial, sans-serif;
+}
+/* กันข้อความล้น/แตกบรรทัด */
+.container, .container *{
+  overflow-wrap:anywhere;
+  word-break:normal;
+  line-height:1.25;
+}
+
+/* =========================================================
+   Container หลัก
+   ========================================================= */
+.container{
+  position:relative;
+  width:var(--container-w);
+  height:var(--container-h);
+  background:#ecf0f1;
+  border-radius:30px;
+  box-shadow:0 0 30px rgba(0,0,0,.2);
+  overflow:hidden; 
+}
+
+/* =========================================================
+   กล่องฟอร์ม (Login & Register)
+   ========================================================= */
+.form-box{
+  position:absolute; 
+  top:0; 
+  width:50%; 
+  height:100%;
+  background:#ecf0f1;
+  display:flex; flex-direction:column; justify-content:center;
+  padding:22px 28px;
+  color:#333; text-align:left; z-index:1;
+  transition:transform var(--slide-time) ease, opacity var(--slide-time) ease;
+  will-change:transform, opacity;
+}
+.form-box.register{ 
+  left:0; 
+}
+.form-box.login{ 
+  right:0; 
+}
+
+/* หัวข้อและฟอร์ม */
+.container h1{ 
+  text-align:center; 
+  font-size:34px; 
+  margin:4px 0 12px; 
+}
+form{ 
+  width:100%; 
+}
+
+
+/* =========================================================
+ Layout ของหน้า Register พอดี container
+   ========================================================= */
+.form-box.register form{
+  display:flex;                 
+  flex-direction:column;       
+  gap:12px;                     
+  align-content:center;         
+  justify-content:center;
+  max-height:calc(100% - 24px); 
+}
+
+/* =========================================================
+   form-row ช่องในแถวเดียวกัน
+   ========================================================= */
+.form-row{
+  display:flex;                
+  flex-wrap:nowrap;             /* บังคับให้ "อยู่แถวเดียวกัน" */
+  gap:16px;                     /* ช่องไฟระหว่างช่อง */
+  align-items:flex-start;       /* จัดให้หัวและท้ายเรียง */
+  margin-bottom:0;              /* ระยะห่างควบคุมด้วย gap */
+}
+.form-row .input-box{
+  flex:1 1 0;                   /* กว้างเท่ากันทั้งสองช่อง */
+  min-width:0;                  /* กันล้น */
+}
+
+/* =========================================================
+    ปุ่ม
+   ========================================================= */
+.input-box{ 
+    position:relative; 
+    margin:0; 
+  } /* ให้เว้นระยะผ่าน gap ของ form */
+
+.input-box label,
+.form-group label,
+.input-gender label{
+  display:block;
+  margin-bottom:6px;
+  font-size:var(--label-size);
+  font-weight:var(--label-weight);
+  color:#1f2a33;
+  transition: color .2s ease, transform .2s ease; 
+  cursor: pointer; 
+}
+.input-box input,
+.input-box select,            /* เพิ่ม select ใน .input-box ให้สไตล์เดียวกัน */
+.form-phone input,
+.form-group select,
+.input-gender select{
+  width:100%;
+  padding:11px 12px;
+  background:#dee0e2;
+  border-radius:8px; border:none; 
+  outline:none;
+  font-size:16px; color:#333; 
+  font-weight:500;
+}
+.input-box input::placeholder{ 
+  color:#888; 
+  font-weight:400; 
+}
+
+
+
+
+.btn{
+  width:100%; height:46px;
+  background:#3b7ca1;
+  border-radius:8px; border:none; cursor:pointer;
+  font-size:16px; color:#EBECED; font-weight:700;
+  box-shadow:0 0 10px rgba(215, 224, 236, 0.08);
+  margin-top:4px;
+}
+
+
+/* =========================================================
+   พื้นหลังสลับ
+   ========================================================= */
+.toggle-box{ 
+  position:absolute; 
+  inset:0;
+ }
+.toggle-box::before{
+  content:''; 
+  position:absolute; 
+  width:300%; left:-250%; 
+  height:100%;
+  background: radial-gradient(	#2d81ac ,	#1a86b8);
+  border-radius:144px; 
+  z-index:2;
+  transition:var(--slide-time) ease-in-out;
+  pointer-events:none;
+  border: none;
+}
+.container.active .toggle-box::before{ left:50%; }
+
+.toggle-pannel{
+  position:absolute;
+   width:50%;
+    height:100%;
+     color:#EBECED;
+  display:flex; 
+  flex-direction:column; 
+  justify-content:center; 
+  align-items:center;
+  z-index:2; 
+  text-align:center; 
+  padding:0 24px;
+  transition: transform var(--slide-time) ease, 
+  opacity var(--slide-time) ease;
+  will-change: transform, opacity;
+}
+.toggle-pannel h1{ 
+    margin-bottom:8px; 
+    font-size:48px; 
+  }
+.toggle-pannel p, .toggle-pannel p1{
+   margin-bottom:16px; 
+   font-size: 24px;
+  } 
+  
+  /* รองรับ p1 */
+.toggle-pannel .btn{ 
+  width:160px;
+   height:64px; 
+   background:transparent;
+  border:2px solid #fff;
+   box-shadow:none;
+   }
+
+.toggle-pannel.toggle-left{
+  left:0; 
+  transform: translateX(0);   
+   opacity:1;
+}
+.container.active .toggle-pannel.toggle-left{
+  transform: translateX(-100%);       
+   opacity:0;
+}
+.toggle-pannel.toggle-right{
+  right:0; transform: translateX(100%); 
+  opacity:0;
+}
+.container.active .toggle-pannel.toggle-right{
+  transform: translateX(0);             
+  opacity:1;
+}
+
+
+/* =========================================================
+    Slide/Fade สลับฟอร์ม
+   ========================================================= */
+.form-box.register{
+  visibility:visible !important;
+  opacity:0;   
+  transform:translateX(-100%); 
+   pointer-events:none;
+}
+.form-box.login{
+  opacity:1;   
+  transform:translateX(0);      
+  pointer-events:auto;
+}
+.container.active .form-box.register{
+  opacity:1;   
+  transform:translateX(0);      
+  pointer-events:auto;
+}
+.container.active .form-box.login{
+  opacity:0;   
+  transform:translateX(100%);   
+  pointer-events:none;
+}
+
+
+/* =========================================================
+   Stagger กันวาร์ป ค่อยๆโผล่
+   ========================================================= */
+.form-box.register h1,
+.form-box.register .input-box,
+.form-box.register .form-row,
+.form-box.register .btn{
+  opacity:0; 
+  transform:translateY(8px);
+  transition:opacity var(--fade-time) ease, 
+  transform var(--fade-time) ease;
+}
+
+.container.active .form-box.register h1,
+.container.active .form-box.register .input-box,
+.container.active .form-box.register .form-row,
+.container.active .form-box.register .btn{
+  opacity:1; 
+  transform:none;
+}
+
+.container.active .form-box.register h1{ 
+  transition-delay:.05s; 
+}
+.container.active .form-box.register .input-box{ 
+  transition-delay:.10s; 
+}
+.container.active .form-box.register .form-row{ 
+  transition-delay:.15s; 
+}
+.container.active .form-box.register .btn{ 
+  transition-delay:.20s; 
+}
+
+
+
+
+/* ===== ปรับปรุงเฉพาะส่วน Login ===== */
+
+/* ปรับระยะห่างของกล่อง Login */
+.form-box.login form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;  /* เพิ่มช่องว่างระหว่าง input */
+  justify-content: center;
+  max-height: calc(100% - 24px);
+}
+
+/* ปรับ input-box ให้มี margin ล่าง */
+.form-box.login .input-box {
+  margin-bottom: 12px;
+}
+
+/* ปรับ label และ input ดูดีข้น*/
+.form-box.login .input-box label {
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  margin-bottom: 6px;
+  color: #1f2a33;
+}
+
+.form-box.login .input-box input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #dee2e2;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+.form-box.login .input-box input::placeholder {
+  color: #888;
+  font-weight: 400;
+}
+
+/* ปรับปุ่ม login */
+.form-box.login .btn {
+  margin-top: 8px;
+  height: 46px;
+  background: #3b7ca1;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #EBECED;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(238, 236, 236, 0.08);
+}
+
+/* =========================================================
+   Responsive 
+   ========================================================= */
+@media (max-width:1160px){
+  :root{ --container-w:96vw; --container-h:840px; }
+}
+@media (max-width:920px){
+  .container h1{ font-size:32px; }
+  .input-box label{ font-size:18px; }
+  .input-box input,
+  .input-box select{ padding:10px 11px; }
+  .form-box.register form{ gap:10px; }
+}
+@media (max-width:560px){
+  .form-row{ flex-wrap:wrap; }       
+  .form-row .input-box{ flex:1 1 100%; }  
+}
+
+/* =========================================================
+   Reduced Motion
+   ========================================================= */
+@media (prefers-reduced-motion: reduce){
+  .form-box,
+  .toggle-box::before,
+  .toggle-pannel,
+  .form-box.register h1,
+  .form-box.register .input-box,
+  .form-box.register .form-row,
+  .form-box.register .btn{
+    transition:none !important;
+    animation:none !important;
+  }
+  .form-box .input-box > label {  
+    transition:none !important;
+    animation:none !important;
+  }
+}
+
+/*label เด้ง*/
+@keyframes bounceY {
+  0%   { transform: translateY(0); }
+  30%  { transform: translateY(-4px); }
+  60%  { transform: translateY(0); }
+  80%  { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+
+.form-box .input-box:focus-within > label {
+  animation: bounceY var(--anim-bounce) ease-in-out 1;
+  color: var(--accent);
+}
