@@ -10,7 +10,7 @@
             <hr class="sidebar-divider my-0">
 
             <li class="nav-item active">
-                <a class="nav-link" href="admin.php">
+                <a class="nav-link" href="index.html">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
@@ -22,7 +22,7 @@
             </div>
 
             <li class="nav-item">
-                <a class="nav-link" href="editboardgame.php">
+                <a class="nav-link" href="#">
                     <i class="fas fa-fw fa-dice-d6"></i>
                     <span>เพิ่ม/ลบ/แก้ไขบอร์ดเกม</span>
                 </a>
@@ -90,4 +90,4 @@
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div>
             </ul>
-        
+        ```
