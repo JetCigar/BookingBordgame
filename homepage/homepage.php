@@ -50,7 +50,10 @@
             width: 95%;
             max-width: 350px;
             background: #fff;
-            padding: 25px;
+            padding-left: 50px;
+            padding-right: 50px;
+            padding-bottom: 20px;
+            padding-top: 10px;
             border-radius: 20px;
             box-shadow: 0px 2px 2px 5px rgba(0, 0, 0, 0.05);
             transition: all 300ms ease-in-out;
@@ -91,6 +94,12 @@
             color: #3284ed;
 
         }
+        .popup .popup-content .controls .perv-btn {
+            background: transparent;
+            color: #3284ed;
+
+        }
+
 
         .popup .popup-content .controls .submit-btn {
             background: #3284ed;
@@ -118,8 +127,23 @@
             max-width: 360px;
             min-height: 260px;
             display: grid;
-            height: 360px;
             grid-template-rows: auto 1fr auto;
+
+        }
+
+        .image-bg {
+            display: flex;
+            justify-content: center;
+            /* จัดกึ่งกลางแนวนอน */
+            align-items: center;
+            /* (ถ้าต้องการกึ่งกลางแนวตั้งด้วย) */
+        }
+
+
+        .title-age {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         /* endpopup */
@@ -226,7 +250,7 @@
             <section>
                 <div class="cat-row">
                     <?php foreach ($types as $t): ?>
-                        <a class="cat-card" href="list.php?type=<?= (int)$t['btId'] ?>">
+                        <a class="cat-card" <?= (int)$t['btId'] ?>">
                             <div class="texts">
                                 <div class="title"><?= htmlspecialchars($t['btName']) ?></div>
                                 <!-- ถ้ายังไม่มีจำนวน ให้ซ่อนไว้ก่อน -->
@@ -245,55 +269,75 @@
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
             ]);
 
-            $types = $pdo->query("SELECT boradgame.bgName,bordgamedescription.image_url,bordgamedescription.bdId
+            $types = $pdo->query("SELECT boradgame.bgName,bordgamedescription.image_url,bordgamedescription.bdId,bordgamedescription.bddescript,bordgamedescription.bdage,TIME_FORMAT(bordgamedescription.bdtime, '%H:%i:%s') AS bdtime
                                             FROM boradgame
                                             INNER JOIN bordgamedescription
                                             ON boradgame.bdId = bordgamedescription.bdId ORDER BY bdId DESC")->fetchAll();
+
             ?>
             <section>
                 <div class="cat-row">
-                    <?php foreach ($types as $t): ?>
-                        <button class="open-popup" style="border: none; background:none;">
-                            <a class="cat-card open-popup">
-                                <div class="texts">
-                                    <div>
-                                        <?php
-                                        $img = $t['image_url'] ?? '';
-                                        if ($img !== '') {
-                                            $src = '/BookingBordgame/' . ltrim($img, '/');
-                                            echo '<img src="' . htmlspecialchars($src, ENT_QUOTES, 'UTF-8') . '" ' .
-                                                'loading="lazy" decoding="async" ' .
-                                                'style="max-width:300px;
-                                                aspect-ratio:16/9;object-fit:cover;border-radius:12px">';
-                                        }
-                                        ?>
-                                    </div>
-                                    <div class="title"><?= htmlspecialchars($t['bgName']) ?></div>
-
-
+                    <?php foreach ($types as $t):
+                        $img = $t['image_url'] ?? '';
+                        $src = $img !== '' ? '/BookingBordgame/' . ltrim($img, '/') : '';
+                    ?>
+                        <button
+                            type="button"
+                            class="cat-card open-popup"
+                            style="border:none;background:none;padding:0"
+                            data-bgname="<?= htmlspecialchars($t['bgName'], ENT_QUOTES, 'UTF-8') ?>"
+                            data-bddescription="<?= htmlspecialchars($t['bddescript'], ENT_QUOTES, 'UTF-8') ?>"
+                            data-image="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
+                            data-age="<?= htmlspecialchars($t['bdage'], ENT_QUOTES, 'UTF-8') ?>"
+                            data-time="<?= htmlspecialchars($t['bdtime'], ENT_QUOTES, 'UTF-8') ?>"
+                            data-bdid="<?= (int)$t['bdId'] ?>">
+                            <div class="texts">
+                                <div>
+                                    <?php if ($src): ?>
+                                        <img src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
+                                            loading="lazy" decoding="async"
+                                            style="max-width:300px;aspect-ratio:16/9;object-fit:cover;border-radius:12px">
+                                    <?php endif; ?>
                                 </div>
-                            </a>
+                                <div class="title"><?= htmlspecialchars($t['bgName']) ?></div>
+                            </div>
                         </button>
                     <?php endforeach; ?>
                 </div>
             </section>
+
         </div>
-        
+
         <aside>
-            
             <div class="center">
             </div>
+
             <div id="popup" class="popup">
-                
                 <div class="overlay"></div>
+
                 <div class="popup-content">
+
                     <h2 id="popup-title"></h2>
+                    <div class="image-bg" style="max-width:100%; align-items:center;">
+                        <img id="popup-image" style="max-width:100%;border-radius:12px;display:none">
+                    </div>
                     <div class="popup-body">
                         <div class="step">
-                            <p>หน้า 1: ข้อความแนะนำ…</p>
+                            <p id="popup-desc" style="font-size: 16px; margin:1rem 1rem">หน้า 1: ข้อความแนะนำ…</p>
+                            <div class="title-age" style="display: flex;">
+                                <h1 style="font-size: 20px;">อายุ</h1>
+                                <h1 id="popup-age" style="font-size: 20px;">age</h1>
+                            </div>
+                            <h1 style="font-size: 25px;">เวลาในการเล่น</h1>
+                            <h1 id="popup-time" style="font-size: 16px;">time</h1>
+                            <ul style="list-style-type: none; display:flex; justify-content:center;">
+                                <li style="padding: 0rem 0.25rem 0rem 0.25rem; color:#909090;">ชั่วโมง</li>
+                                <li style="padding: 0rem 0.25rem 0rem 0.25rem;color:#909090;">นาที</li>
+                                <li style="padding: 0rem 0.25rem 0rem 0.25rem;color:#909090;">วินาที</li>
+                            </ul>
                         </div>
                         <div class="step">
-                            <p>หน้า 2: รายละเอียดเพิ่มเติม…</p>
+                            <h1>กรุณาเลือกโต๊ะที่ต้องการนั่ง</h1>
                         </div>
                         <div class="step">
                             <p>หน้า 3: สรุป/ยืนยัน…</p>
@@ -301,14 +345,116 @@
                     </div>
                     <div class="controls">
                         <button class="close-btn">close</button>
+                        <button class="perv-btn">back</button>
                         <button class="submit-btn next-btn">next</button>
                     </div>
                 </div>
             </div>
-            
-            <script src="../../BookingBordgame/homepage/bgDescript.js"></script>
+
+            <script>
+                // ===== popup core (ของเดิม) =====
+                function createPopup(id) {
+                    let popupNode = document.querySelector(id);
+                    let overlay = popupNode.querySelector(".overlay");
+                    let closeBtn = popupNode.querySelector(".close-btn");
+                    let prevBtn = popupNode.querySelector(".perv-btn");
+                    let steps = Array.from(popupNode.querySelectorAll('.step'));
+                    let nextBtn = popupNode.querySelector('.next-btn');
+                    let currenIndex = 0;
+
+                    function showStep(i) {
+                        steps.forEach((el, idx) => {
+                            if (idx === i) {
+                                                                if (closeBtn) closeBtn.hidden = (i !== 0); // หน้าแรก: โชว์ close / หน้าอื่น: ซ่อน
+                                if (prevBtn) prevBtn.hidden = (i === 0);
+                                el.hidden = false;
+                                el.classList.add('is-active');
+
+                            } else {
+                                el.hidden = true;
+                                el.classList.remove('is-active');
+                            }
+                        });
+
+                        if (nextBtn) {
+                            nextBtn.textContent = (i === steps.length - 1) ? 'Book' : 'next';
+                        }
+                    }
+                    if (nextBtn) {
+                        nextBtn.addEventListener('click', () => {
+                            if (currenIndex < steps.length - 1) {
+                                currenIndex += 1;
+                                showStep(currenIndex);
+
+                            } else {
+                                closePopup();
+                            }
+                        });
+                    }
+
+                    if (prevBtn) {
+                        prevBtn.addEventListener('click', () => {
+                            if (currenIndex > 0) {
+                                currenIndex -= 1;
+                                showStep(currenIndex);
+                            }
+                        });
+                    }
+
+                    function openPopup() {
+                        popupNode.classList.add("active");
+                        currenIndex = 0;
+                        if (steps.length) showStep(0);
+                    }
+
+                    function closePopup() {
+                        popupNode.classList.remove("active");
+                    }
+                    overlay.addEventListener("click", closePopup);
+                    closeBtn.addEventListener("click", closePopup);
+                    return openPopup;
+                }
+
+                const openPopup = createPopup("#popup");
+
+                // ===== อัปเดตข้อมูล + เปิด popup เมื่อคลิกการ์ด =====
+                document.addEventListener("click", (e) => {
+                    const trigger = e.target.closest(".open-popup");
+                    if (!trigger) return;
+
+                    const name = trigger.dataset.bgname || "";
+                    const desc = trigger.dataset.bddescription || "";
+                    const img = trigger.dataset.image || "";
+                    const age = trigger.dataset.age || "";
+                    const time = trigger.dataset.time || "";
+
+                    // ใส่ลง DOM
+                    const titleEl = document.getElementById("popup-title");
+                    const descEl = document.getElementById("popup-desc");
+                    const ageEl = document.getElementById("popup-age");
+                    const imgEl = document.getElementById("popup-image");
+                    const timeEl = document.getElementById("popup-time");
+
+                    if (titleEl) titleEl.textContent = name;
+                    if (descEl) descEl.textContent = desc;
+                    if (ageEl) ageEl.textContent = age;
+                    if (timeEl) timeEl.textContent = time;
+                    if (imgEl) {
+                        if (img) {
+                            imgEl.src = img;
+                            imgEl.alt = name || "boardgame";
+                            imgEl.style.display = "block";
+                        } else {
+                            imgEl.removeAttribute("src");
+                            imgEl.style.display = "none";
+                        }
+                    }
+
+                    openPopup(); // เปิด popup หลังอัปเดตข้อมูลเรียบร้อย
+                });
+            </script>
         </aside>
-        
+
     </main>
     <footer>
     </footer>
