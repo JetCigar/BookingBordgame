@@ -7,9 +7,9 @@
     <link href='https://fonts.googleapis.com/css?family=Kanit' rel='stylesheet'>
     <style>
         *{
-            box-sizing: 0px;
-            padding: 0px;
-            margin: 0px;
+            box-sizing: border-box; /* แก้ box-sizing เป็น border-box เพื่อความถูกต้อง */
+            padding: 0;
+            margin: 0;
             font-family: Kanit;
         }
         .logo{
@@ -26,6 +26,7 @@
             justify-content: space-between;
             color: white;
             align-items: center;
+            padding: 0 20px; /* เพิ่ม padding เพื่อจัดช่องไฟ */
         }
         .menu-content{
             list-style-type: none;
@@ -49,8 +50,27 @@
             text-align: center;
         }
 
-        .NewArrials-content{
-
+        /* เพิ่ม style สำหรับ Card บอร์ดเกม */
+        .game-card {
+            display: grid;
+            gap: 5px;
+            min-width: 320px;
+            max-width: 320px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,.1);
+        }
+        .game-card img {
+            max-width: 100%;
+            height: auto;
+        }
+        .game-details {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .game-details strong {
+            color: #333;
         }
     </style>
 </head>
@@ -74,76 +94,105 @@
     <main>
 
         <div class="NewArrials-content">card</div>
-        <div>BoardGame Category</div>
+        <div style="padding: 10px 20px;">BoardGame Category</div>
             <div>
                 <?php
-                    $pdo = new PDO('mysql:host=localhost;dbname=bookingbordgame;charset=utf8mb4','root','',[
-                    PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC
-                    ]);
+                    try {
+                        $pdo = new PDO('mysql:host=localhost;dbname=bookingbordgame;charset=utf8mb4','root','',[
+                        PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC
+                        ]);
 
-                    $types = $pdo->query("SELECT btId, btName FROM bordgameType ORDER BY btName")->fetchAll();
-                    ?>
+                        $types = $pdo->query("SELECT btId, btName FROM bordgameType ORDER BY btName")->fetchAll();
+                ?>
                     <section>
-                    <div class="cat-row">
+                    <div class="cat-row" style="padding: 10px 20px;">
                         <?php foreach ($types as $t): ?>
                         <a class="cat-card" href="list.php?type=<?= (int)$t['btId'] ?>">
                             <div class="texts">
                             <div class="title"><?= htmlspecialchars($t['btName']) ?></div>
-                            <!-- ถ้ายังไม่มีจำนวน ให้ซ่อนไว้ก่อน -->
                             </div>
                         </a>
                         <?php endforeach; ?>
                     </div>
                     </section>
-                    </div>
+                <?php
+                    } catch (PDOException $e) {
+                        echo "<p style='color:red;padding:20px;'>Database Error (Category): " . $e->getMessage() . "</p>";
+                    }
+                ?>
+            </div>
 
-        <div>New Arrials</div>
+        <div style="padding: 10px 20px;">New Arrials</div>
             <div>
                 <?php
-                    $pdo = new PDO('mysql:host=localhost;dbname=bookingbordgame;charset=utf8mb4','root','',[
-                    PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC
-                    ]);
-
-                    $types = $pdo->query("SELECT boradgame.bgName,bordgamedescription.image_url,bordgamedescription.bdId
-                                            FROM boradgame
-                                            INNER JOIN bordgamedescription
-                                            ON boradgame.bdId = bordgamedescription.bdId ORDER BY bdId DESC")->fetchAll();
-                    ?>
+                    try {
+                        $pdo = new PDO('mysql:host=localhost;dbname=bookingbordgame;charset=utf8mb4','root','',[
+                        PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC
+                        ]);
+                        
+                        // 🚩 แก้ไขคำสั่ง SQL: ดึงรายละเอียด (bddescript, bdage, bdtime) มาด้วย
+                        $games = $pdo->query("SELECT 
+                                boradgame.bgName,
+                                bordgamedescription.image_url,
+                                bordgamedescription.bdId,
+                                bordgamedescription.bddescript,
+                                bordgamedescription.bdage,
+                                bordgamedescription.bdtime
+                                FROM boradgame
+                                INNER JOIN bordgamedescription
+                                ON boradgame.bdId = bordgamedescription.bdId 
+                                ORDER BY boradgame.bgid DESC 
+                                LIMIT 10")->fetchAll(); // Limit 10 for New Arrivals
+                ?>
                     <section>
-                    <div class="cat-row">
-                    <?php foreach ($types as $t): ?>
-                    <a class="cat-card" href="list.php?type=<?= (int)$t['bdId'] ?>">
-                        <div class="texts">
+                    <div class="cat-row" style="padding: 10px 20px;">
+                    <?php foreach ($games as $g): ?>
+                    <a class="cat-card game-card" href="list.php?id=<?= (int)$g['bdId'] ?>" style="align-items:flex-start; min-width:320px;">
+                        <div style="display:flex; flex-direction:column; width:100%;">
                         <div>
                             <?php
-                            $img = $t['image_url'] ?? '';
+                            $img = $g['image_url'] ?? '';
                             if ($img !== '') {
-                                // ถ้าเป็น URL เต็ม (http/https) ใช้ตามนั้น, ถ้าเป็น path ภายใน ให้ต่อกับโฟลเดอร์โปรเจกต์
+                                // ตรวจสอบ path รูปภาพ
                                 if (preg_match('#^https?://#i', $img)) {
                                     $src = $img;
                                 } else {
+                                    // แก้ไข path ให้เริ่มจากรูทของโปรเจกต์
                                     $src = '/BookingBordgame/' . ltrim($img, '/');
                                 }
 
                                 echo '<img src="' . htmlspecialchars($src, ENT_QUOTES, 'UTF-8') . '" ' .
                                     'loading="lazy" decoding="async" ' .
-                                    'style="max-width:300px;aspect-ratio:16/9;object-fit:cover;border-radius:12px">';
+                                    'style="max-width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px 6px 0 0; margin: 0 -10px -5px -10px;">';
                             } else {
                                 // เผื่อกรณีไม่มีรูป
-                                echo '<div style="width:300px;height:169px;background:#eee;border-radius:12px;display:grid;place-items:center;color:#777">ไม่มีรูป</div>';
+                                echo '<div style="width:100%;height:169px;background:#eee;border-radius:6px 6px 0 0;display:grid;place-items:center;color:#777; margin: 0 -10px -5px -10px;">ไม่มีรูป</div>';
                             }
                             ?>
                         </div>
-                        <div class="title"><?= htmlspecialchars($t['bgName']) ?></div>
-                        <!-- ถ้ายังไม่มีจำนวน ให้ซ่อนไว้ก่อน -->
+                        <div class="texts" style="padding:10px 0;">
+                            <div class="title" style="text-align:left; font-size:1.1em;"><?= htmlspecialchars($g['bgName']) ?></div>
+                            <div class="game-details">
+                                <p style="margin-top: 5px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; min-height: 2.4em;">
+                                    <?= htmlspecialchars($g['bddescript']) ?>
+                                </p>
+                                <p><strong>อายุ:</strong> <?= htmlspecialchars($g['bdage']) ?></p>
+                                <p><strong>เวลา:</strong> <?= htmlspecialchars($g['bdtime']) ?></p>
+                            </div>
+                        </div>
                         </div>
                     </a>
                     <?php endforeach; ?>
                     </div>
                     </section>
-                    </div>
+                <?php
+                    } catch (PDOException $e) {
+                        echo "<p style='color:red;padding:20px;'>Database Error (New Arrials): " . $e->getMessage() . "</p>";
+                    }
+                ?>
+            </div>
     </main>
     <footer></footer>
 </body>
