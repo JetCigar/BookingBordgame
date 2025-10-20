@@ -68,7 +68,9 @@ if(isset($_POST['add'])) {
 if(isset($_GET['delete'])) {
     $bgid = $_GET['delete'];
     
-    $stmt = $conn->prepare("DELETE FROM boradgame WHERE bgid=?");
+    $stmt = $conn->prepare("DELETE FROM boradgame WHERE bgid=?" );
+
+
     $stmt->bind_param("i", $bgid);
     
     if ($stmt->execute()) {
