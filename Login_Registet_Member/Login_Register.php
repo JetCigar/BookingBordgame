@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+ <!-- Member part -->
+<!DOCTYPE html>     
 <html lang="th">
 <head>
   <meta charset="UTF-8">
@@ -12,71 +13,81 @@
 
             <!--  =====  หน้า Login  =====-   r-->      
             <div class = "form-box login">
-                <form action="">
+                <form action="register_Member_save_v2.php">
                     <h1>เข้าสู่ระบบ</h1>
                 <div class = "input-box">
                         <label for="auid">ไอดีผู้ใช้</label> 
                         <input type="text" id="auid" name="auid" placeholder="กรุณากรอกไอดีผู้ใช้" required>
+                         <div class="error-message"></div> <!-- vaildation-->
                 </div>
                 <div>
                     <div class="input-box">
                         <label for="password">รหัสผ่าน</label>
                         <input type="password" id="password" name="password" placeholder="กรุณากรอกรหัสผ่าน" required>
+                         <div class="error-message"></div> <!-- vaildation-->
                         
                     </div>
                  </div>
                         <button type="submit" class="btn">เข้าสู่ระบบ</button>
                   </form>
-            </div>
-            
+            </div>           
 
+            
                 <!--  ======  หน้า registe    ====== -->                      
             <div class = "form-box register">
-                <form action="">
                     <h1>สมัครผู้ใช้</h1>
+                    <form id="registrationForm" action="register_Member_save_v2.php" method="post" novalidate>
+            
                 <div class = "input-box">
                         <label for="auid">Username</label> <!-- 1.1 User auid input--> 
                         <input type="text" id="auid" name="auid" placeholder="ตั้ง Username เช่น User123" required>
+                         <div class="error-message"></div> <!-- vaildation-->
                 </div>
                 
                 <!-- 2.1 แถวรวมในบรรทัดเดียวกันที่ 1  (ชื่อ User , นามสกุล surname) --> 
                 <div class="form-row">
                       <div class="input-box">
-                        <label for="username">ชื่อผู้ใช้</label> <!-- 1. 2 Mname member input --> 
-                        <input type="text" id="mname" name="username" placeholder="เช่น jarachai" required>
+                        <label for="FullnameMember">ชื่อผู้ใช้</label> <!-- 1. 2 Mname member input --> 
+                        <input type="text" id="FullnameMember" name="FullnameMember" placeholder="เช่น jarachai" required>
+                         <div class="error-message"></div> <!-- vaildation-->
                      </div> 
 
                         <div class="input-box"> <!-- 1.3 Mlastname member input -->
-                          <label for="username">นามสกุล</label>
-                          <input type="text" id="mlastname" name="surname" placeholder="เช่น jarachai" required>
+                          <label for="LastNameMember">นามสกุล</label>
+                          <input type="text" id="LastNameMember" name="LastNameMember" placeholder="เช่น jarachai" required>
+                           <div class="error-message"></div> <!-- vaildation-->
                     </div>
                 </div> 
 
             <div class="input-box">
-                 <label for="email">อีเมล(Email)</label> <!-- 1.4 Email input--> 
-                 <input type="email" id="email" name="email" placeholder="name@example.com" required> 
+                 <label for="MemberEmail">อีเมล(Email)</label> <!-- 1.4 Email input--> 
+                 <input type="email" id="MemberEmail" name="MemberEmail" placeholder="name@example.com" required> 
+                  <div class="error-message"></div> <!-- vaildation-->
                </div>
 
       <div class="input-box">
-                <label   label for="person_ID member">รหัสบัตรประชาชน</label> <!-- person Id input--> 
-                <input type="text" id="personId" name="person_ID member" placeholder="ตัวอย่าง 1749700113541" required> 
+                <label   label for="person_ID_Member">รหัสบัตรประชาชน</label> <!-- person Id input--> 
+                <input type="text" id="person_ID_Member" name="person_ID_Member" placeholder="ตัวอย่าง 1749700113541" required> 
+                <div class="error-message"></div> <!-- vaildation-->
         </div>
       <!-- จุดสิ้นสุดแถว form-row ชื่อ User , นามสกุล surname -->
 
                  <!-- 2.2 แถวรวมในบรรทัดเดียวกันที่ 2 (gender เพศ , นามสกุล surname) --> 
              <div class="form-row">
                    <div class="input-box">
-                         <label for="gender">เพศ</label> <!-- 1.5 mgender member input -->
-                             <select id="mgender" name="gender" required>
+                         <label for="genderMember">เพศ</label> <!-- 1.5 mgender member input -->
+                             <select id="genderMember" name="genderMember" required>
                                       <option value="">-- กรุณาเลือกเพศ --</option>
                                      <option value="male">ชาย</option>
                                     <option value="female">หญิง</option>
               </select>
+               <div class="error-message"></div> <!-- vaildation-->
            </div>
 
         <div class="input-box"> <!-- 1.6 mdatebirth member input -->
-             <label for="dob">วันเกิด</label>
-             <input type="date" id="mbrithday" name="dob" required>
+             <label for="BrithDayMemeber">วันเกิด</label>
+             <input type="date" id="BrithDayMemeber" name="BrithDayMemeber" required>
+              <div class="error-message"></div> <!-- vaildation-->
         </div>
 
       </div> 
@@ -86,35 +97,42 @@
       <!-- 2.3 แถวรวมในบรรทัดเดียวกันที่ 3 (phone เบอร์โทร , faculty คณะ) --> 
       <div class="form-row">
         <div class="input-box">
-            <label for="phone">เบอร์โทร</label> <!-- 1.7 phone member input -->
-            <input type="text" id="mphone" name="phone" placeholder=" " required>
+            <label for="MemberPhone">เบอร์โทร</label> <!-- 1.7 phone member input -->
+            <input type="text" id="MemberPhone" name="MemberPhone" placeholder=" " required>
+             <div class="error-message"></div> <!-- vaildation-->
         </div>
 
         <div class="input-box"> 
             <label for="faculty">คณะ</label> <!-- 1.8 faculty member input -->
             <select id="faculty" name="faculty" required>
                     <option value="">-- กรุณาคณะ --</option>
-                    <option value="Nursing">เทคโนโลยีคหกรรมศาสตร์</option>
-                    <option value="IM">คณะการแพทย์บูรณาการ (กพบ.)</option>
-                    <option value="LA">เคณะศิลปศาสตร์ (ศศ.)</option>
-                    <option value="MCT">คณะวิทยาศาสตร์และเทคโนโลยี (วท.)</option>
-                    <option value="ST">คณะสถาปัตยกรรมศาสตร์ (สถ.)</option>
-                    <option value="Arch">คณะครุศาสตร์อุตสาหกรรม (คอ.)</option>
-                    <option value="Eng">คณะเทคโนโลยีการเกษตร (ทก.)</option>
-                    <option value="BA">คณะบริหารธุรกิจ (บธ.)</option>
-                    <option value="Eng">คณะวิศวกรรมศาสตร์ (วศ.)</option>
+                    <option value="ทค.">คณะเทคโนโลยีคหกรรมศาสตร์</option>
+                    <option value="กพน.">คณะการแพทย์บูรณาการ (กพบ.)</option>
+                    <option value="ศก.">คณะศิลปศาสตร์ (ศศ.)</option>
+                    <option value="วท.">คณะวิทยาศาสตร์และเทคโนโลยี (วท.)</option>
+                    <option value="สถ.">คณะสถาปัตยกรรมศาสตร์ (สถ.)</option>
+                    <option value="คอ.">คณะครุศาสตร์อุตสาหกรรม (คอ.)</option>
+                    <option value="ทก.">คณะเทคโนโลยีการเกษตร (ทก.)</option>
+                    <option value="บธ.">คณะบริหารธุรกิจ (บธ.)</option>
+                    <option value="วศ.">คณะวิศวกรรมศาสตร์ (วศ.)</option>
+                    <option value="ทสม.">คณะเทคโนโลยีสื่อสารมวลชน (ทสม.)</option>
+                    <option value="ศก.">คณะศิลปกรรมศาสตร์ (ศก.)</option>
+                    <option value="พยาบาลศาสตร์">คณะพยาบาลศาสตร์</option>
             </select>
+             <div class="error-message"></div> <!-- vaildation-->
         </div>
       </div> 
                 <div>
                     <div class="input-box">
                         <label for="password">รหัสผ่าน</label>
                         <input type="password" id="password" name="password" placeholder="กรุณากรอกรหัสผ่าน" required>
+                         <div class="error-message"></div> <!-- vaildation-->
                     </div>
                  </div>
                   <div class="input-box">
                         <label for="confirmPassword">ยืนยันรหัสผ่าน</label>
                                  <input type="password" id="confirmPassword" name="confirmPassword" required>
+                               <div class="error-message"></div> <!-- vaildation-->   
                            </div>
                         <button type="submit" class="btn">สมัครผู้ใช้</button>
                   </form>

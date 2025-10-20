@@ -1,0 +1,143 @@
+/* =========================================================
+   ตัวแปรหลัก ของ Member register_libV2.php
+   ========================================================= */
+:root {
+  --bg: #b2dce4;
+  --card: #ffffff;
+  --text: #1d2433;
+  --muted: #667085;
+  --primary: #2563eb;
+  --primary-contrast: #ffffff;
+  --error-color: #dc2626; /* Changed variable name for clarity */
+  --success-color: #09c372; /* Added success color */
+  --border: #e5e7eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Kanit', sans-serif; /* Added fallback font */
+  color: var(--text);
+  background: var(--bg);
+}
+
+.container {
+  max-width: 560px;
+  margin: 48px auto;
+  padding: 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(2, 6, 23, 0.06);
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: 1.6rem;
+  text-align: center; /* Centered title */
+}
+
+form {
+  margin-top: 8px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  position: relative; /* Needed for positioning error messages if you want more complex layouts */
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+label {
+  font-weight: 600;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text);
+  font-size: 0.98rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.btn-primary {
+  width: 100%;
+  display: block;
+  padding: 12px 24px;
+  background: var(--primary);
+  color: var(--primary-contrast);
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.05s ease, box-shadow 0.15s ease, background 0.15s ease;
+  margin-top: 16px; /* Added margin for spacing */
+}
+
+.btn-primary:hover {
+  background: #1e4fd6;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* =========================================================
+                       Validation Styles (CORRECTED)
+   ========================================================= */
+
+/* Style for the error message text */
+.error-message {
+  color: var(--error-color);
+  font-size: 0.85rem; /* FIX: Changed from 0.8px to a visible size */
+  /* The message is empty by default, so it won't take up space */
+}
+
+/* When .form-group has the .success class, style the input inside it */
+.form-group.success input,
+.form-group.success select,
+.form-group.success input[type="date"] {
+  border-color: var(--success-color);
+}
+
+/* When .form-group has the .error class, style the input inside it */
+.form-group.error input,
+.form-group.error select,
+.form-group.error input[type="date"] {
+  border-color: var(--error-color);
+}
+
+/* When .form-group has .error, make the error message visible */
+.form-group.error .error-message {
+  display: block; /* Makes the message appear */
+}
