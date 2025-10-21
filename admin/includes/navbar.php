@@ -42,9 +42,9 @@
     </div>
 
     <li class="nav-item">
-        <a class="nav-link" href="editmember.php">
+        <a class="nav-link" href="#">
             <i class="fas fa-fw fa-user-edit"></i>
-            <span>แก้ไขผู้ใช้</span>
+            <span>เพิ่ม/ลบ/แก้ไขผู้ใช้</span>
         </a>
     </li>
 
@@ -59,7 +59,7 @@
                 <h6 class="collapse-header">การควบคุมและประวัติ:</h6>
                 <a class="collapse-item" href="#">ปลดล็อคผู้ใช้</a>
                 <a class="collapse-item" href="#">แบนผู้ใช้</a>
-                <a class="collapse-item" href="user_history.php">ดูประวัติผู้ใช้</a>
+                <a class="collapse-item" href="#">ดูประวัติผู้ใช้</a>
             </div>
         </div>
     </li>
