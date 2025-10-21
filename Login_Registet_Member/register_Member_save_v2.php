@@ -2,30 +2,21 @@
 // register_v2.php   บันทึกลงฐานข้อมูล member
 require __DIR__ . '/../Connect/db.php';
 
-function sendHtml($state_form, $title, $message)
-{ //สร้างหน้าเว็บ HTML เมื่่อกรอก form register ของ member เสร็จ
-
-    //$state_form = ใช้เป็นตัวบ่งบอกสถานะ (true/false)
-    //$title = ข้อความหัวเรื่องที่จะนำไปแสดง
-    //$message = ข้อความรายละเอียดที่จะนำไปแสดง
-
+function sendHtml($state_form, $title, $message) {
+    // ฟังก์ชันนี้ใช้เฉพาะตอนสมัครไม่สำเร็จ
     $color = $state_form ? '#0f766e' : '#dc2626';
     echo "<!doctype html><html lang='th'>
     <meta charset='utf-8'><body style='font-family:Kanit, sans-serif;padding:24px'>
         <h2 style='color:$color'>$title</h2><p>$message</p>
-        <p>index.html« กลับหน้าแรก</a></p>
-          </body></html>";
+        <p><a href='Login_Register.php'>« กลับหน้าแรก</a></p>
+    </body></html>";
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: index.html');
+    header('Location:/Login_Register.php');
     exit;
 }
-
-
-
-
 
 // 1) รับข้อมูลจากฟอร์ม
 $username   = trim($_POST['auid']             ?? '');
@@ -37,9 +28,8 @@ $gender     = $_POST['genderMember']          ?? '';
 $birthday   = $_POST['BrithDayMemeber']       ?? '';
 $phone      = trim($_POST['MemberPhone']      ?? '');
 $faculty    = trim($_POST['faculty']          ?? '');
-$password   = $_POST['password']         ?? '';
+$password   = $_POST['password1']             ?? '';
 $confirm    = $_POST['confirmPassword']       ?? '';
-
 
 // 2) ตรวจสอบความถูกต้องเบื้องต้น
 $errors = [];
@@ -56,7 +46,6 @@ if ($firstName === '' || $lastName === '')      $errors[] = 'กรุณาก�
 if ($errors) {
     sendHtml(false, 'สมัครสมาชิกไม่สำเร็จ', 'พบข้อผิดพลาด:<br>- ' . implode('<br>- ', $errors));
 }
-
 
 try {
     // 3) ตรวจซ้ำ Username และ personId
@@ -103,7 +92,13 @@ try {
     // 4.4 commit
     $mysqli->commit();
 
-    sendHtml(true, 'สมัครสมาชิกสำเร็จ', 'คุณสามารถเข้าสู่ระบบได้แล้ว');
+    // ✅ แจ้งเตือนแล้วกลับไปหน้า index.html
+    echo "<script>
+        alert('สมัครสมาชิกสำเร็จ! คุณสามารถเข้าสู่ระบบได้แล้ว');
+        window.location.href = '../../BookingBordgame/Login_Registet_Member/Login_Register.php';
+    </script>";
+    exit;
+
 } catch (Throwable $e) {
     try {
         $mysqli->rollback();

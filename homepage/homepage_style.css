@@ -1,0 +1,273 @@
+/* ======================= [ตัวแปรธีม: ปรับสี/ฟอนต์ง่าย ๆ] ======================= */
+:root {
+  --color-primary: #0078d7;   /* สีหลัก */
+  --color-dark: #1a1a1a;      /* สีตัวอักษรเข้ม */
+  --color-muted: #6b7280;     /* สีคำอธิบายจาง */
+  --bg-soft: #f5f7fb;         /* สีพื้นหลังอ่อน */
+  --white: #fff;
+
+  --radius: 10px;             /* ความโค้งขอบ */
+  --shadow: 0 10px 25px rgba(0,0,0,0.08);
+
+  --font-body: "Segoe UI", Tahoma, sans-serif;
+  --max-w: 1100px;
+
+  /* รูปภาพฮีโร่: ใส่ URL รูปของคุณเอง (ไฟล์ในโปรเจ็กต์หรือ URL ภายนอก) */
+  --hero-image: url("hero.jpg"); /* ถ้าไม่มี ให้ใส่กราเดียนท์แทนใน .hero */
+}
+
+/*top*/
+
+        *{
+            box-sizing: 0px;
+            padding: 0px;
+            margin: 0px;
+            font-family: Kanit;
+        }
+        .logo{
+            width: 70px;
+            height: 70px;
+        }
+
+        .navbar-content{
+            list-style-type: none;
+            height: 85px;
+            background-color: rgb(0, 0, 130);
+            border: solid red 1px;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            align-items: center;
+        }
+        .menu-content{
+            list-style-type: none;
+            display: flex;
+        }
+        .menu-content li{
+            margin-left: 60px;
+        }
+
+        .cat-row{ display:flex; gap:12px; overflow-x:auto; padding:8px 4px; scroll-snap-type:x proximity; }
+        .cat-card{
+        scroll-snap-align:start; display:flex; align-items:center; gap:10px;
+        background:#fff; border:1px solid #e9e9ef; border-radius:12px;
+        padding:10px 14px; text-decoration:none; color:#222; min-width:170px;
+        box-shadow:0 1px 4px rgba(0,0,0,.05);
+        }
+        .cat-card:hover{ transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,.12); }
+        .icon{ font-size:18px; }
+        .texts .title{ font-weight:600; }
+        .title{
+            text-align: center;
+        }
+
+
+/* ======================= [Reset เบื้องต้น + Base] ======================= */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  color: var(--color-dark);
+  background: var(--bg-soft);
+  line-height: 1.6;
+}
+
+a { color: var(--color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.container {
+  width: 100%;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.Top{
+  width: 100vw;                /* กว้างเต็มหน้าจอ */
+  height: 40vh;               /* สูงครึ่งจอ */
+  background-image: linear-gradient(rgba(1, 0, 2, 0.70), rgba(1, 0, 2, 0.70)),url('wall_contact.jpg');
+  background-size: cover;      /* ครอบคลุมพื้นที่ */
+  background-position: center; /* จัดให้อยู่ตรงกลาง */
+}
+.Top-right{
+  width: 40ch;
+  align-items: center;
+  color: #e6e6e6;
+  font-size: 40px;
+  display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      
+      position: relative; /* หรือ absolute/fixed */
+       top: 26px;    /* ขยับลง 20px */
+       left: 980px;
+      
+}
+.Top-left{
+  width: 10ch;
+  align-items: center;
+  color: #e6e6e6;
+  font-size: 40px;
+  display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      
+      position: relative; /* หรือ absolute/fixed */
+       top: 88px;    /* ขยับลง 20px */
+       left: 580px;
+      
+}
+/* ======================= [Header + Nav] ======================= */
+.site-header {
+  background: var(--white);
+  border-bottom: 1px solid #e6e6e6;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.logo {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* ปุ่ม Hamburger (แสดงเฉพาะจอเล็ก) */
+.nav-toggle { display: none; }
+.nav-toggle-btn {
+  display: none;
+  width: 36px; height: 28px;
+  flex-direction: column; justify-content: space-between;
+  cursor: pointer;
+}
+.nav-toggle-btn span {
+  display: block; height: 3px; background: var(--color-dark);
+  border-radius: 3px;
+}
+
+/* เมนูหลัก */
+.site-nav ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; gap: 24px;
+}
+.site-nav a { color: var(--color-dark); }
+.site-nav a:hover { color: var(--color-primary); }
+
+/* ======================= [Hero] ======================= */
+.hero {
+  /* ถ้ามีรูป ให้ใช้รูป + overlay กาเดียนท์ */
+  background:
+    linear-gradient(120deg, rgba(0,120,215,0.25), rgba(0,0,0,0.35)),
+    var(--hero-image);
+  background-position: center;
+  background-size: cover;
+  color: var(--white);
+  padding: 80px 0;
+  text-align: center;
+}
+.hero-content h1 {
+  font-size: 40px; margin: 0 0 10px;
+}
+.hero-content p {
+  margin: 0; color: #f0f6ff;
+}
+
+/* ======================= [Layout: Grid 2 คอลัมน์] ======================= */
+.grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr; /* ซ้ายกว้างกว่าขวาเล็กน้อย */
+  gap: 24px;
+  margin: 32px 0;
+}
+
+/* ======================= [Card] ======================= */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+.section-title {
+  margin-top: 0;
+  border-left: 4px solid var(--color-primary);
+  padding-left: 10px;
+}
+
+/* ======================= [รายการข้อมูลติดต่อ] ======================= */
+.contact-list {
+  list-style: none; padding: 0; margin: 10px 0 20px;
+}
+.contact-list li { margin-bottom: 10px; }
+
+.about{
+  color: navy;
+  font-size: large;
+  position: relative; /* หรือ absolute/fixed */
+       top: 16px;
+}
+/* ======================= [แผนที่] ======================= */
+.map-wrap {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: #eaecef;
+}
+.map-wrap iframe {
+  display: block; width: 100%; height: 280px; border: 0;
+}
+.map-fallback {
+  font-size: 14px; padding: 10px; margin: 0; background: #f9fafb;
+}
+
+/* ======================= [ฟอร์มติดต่อ] ======================= */
+.contact-form .form-group { margin-bottom: 16px; }
+.contact-form label {
+  display: block; margin-bottom: 6px; font-weight: 600;
+}
+.contact-form input[type="text"],
+.contact-form input[type="email"],
+.contact-form textarea {
+  width: 100%; padding: 12px 14px;
+  border: 1px solid #d1d5db; border-radius: 8px;
+  font: inherit;
+}
+.contact-form textarea { resize: vertical; }
+.btn-primary {
+  display: inline-block;
+  background: var(--color-primary); color: var(--white);
+  border: none; padding: 12px 18px; border-radius: 8px;
+  cursor: pointer; font-weight: 600;
+}
+.btn-primary:hover { filter: brightness(1.05); }
+.form-note { font-size: 13px; color: var(--color-muted); }
+
+/* ======================= [Footer] ======================= */
+.site-footer {
+  text-align: center;
+  color: var(--color-muted);
+  padding: 24px 0 40px;
+}
+
+/* ======================= [Responsive: จอเล็ก] ======================= */
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; } /* ซ้อนเป็นคอลัมน์เดียว */
+}
+
+@media (max-width: 720px) {
+  /* แสดงปุ่ม Hamburger + ซ่อนเมนูแนวนอน */
+  .nav-toggle-btn { display: flex; }
+  .site-nav ul { 
+    position: absolute; top: 64px; right: 0; left: 0;
+    flex-direction: column; gap: 0;
+    background: var(--white);
+    border-bottom: 1px solid #e6e6e6;
+    display: none;
+  }
+  .site-nav ul li { border-top: 1px solid #efefef; }
+  .site-nav ul li a { display: block; padding: 12px 20px; }
+  /* เมื่อ checkbox ถูกติ๊ก => เปิดเมนู */
+  .nav-toggle:checked ~ .site-nav ul { display: block; }
+}

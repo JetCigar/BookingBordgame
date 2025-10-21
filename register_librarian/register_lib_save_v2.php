@@ -93,8 +93,8 @@ try {
     // 4) เริ่ม Transaction
     $mysqli->begin_transaction();
 
-    // ADDED: แฮชรหัสผ่านก่อนบันทึก
-    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+    // ADDED: แฮชรหัสผ่านก่อนบันทึก เปลี่ยนเป็นไม่เเฮท
+    $passwordHash = $password;
 
     // 4.1 insert authentication (role = librarian)
     $stmt = $mysqli->prepare("
@@ -121,7 +121,17 @@ try {
     // 4.4 commit
     $mysqli->commit();
 
-    sendHtml(true, 'สมัครสมาชิกสำเร็จ', 'คุณสามารถเข้าสู่ระบบได้แล้ว');
+    // sendHtml(true, 'สมัครสมาชิกสำเร็จ', 'คุณสามารถเข้าสู่ระบบได้แล้ว');
+  
+  
+    // สมัคสำเร็จเด้งไปหน้าlogin
+    echo"<script>
+        alert('สมัครสมาชิกสำเร็จ! คุณสามารถเข้าสู่ระบบได้แล้ว');
+        window.location.href = '../../BookingBordgame/Login_Registet_Member/Login_Register.php';
+        </script>";
+        exit;
+
+
 
 } catch (Throwable $e) {
     try { $mysqli->rollback(); } catch (Throwable $__ ) {}

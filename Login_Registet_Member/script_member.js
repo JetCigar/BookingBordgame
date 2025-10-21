@@ -1,3 +1,4 @@
+
 const container = document.querySelector('.container');
 const registerBtn = document.querySelector('.register-btn');
 const loginBtn = document.querySelector('.login-btn');
@@ -22,7 +23,7 @@ const gender = document.getElementById('genderMember');
 const dob = document.getElementById('BrithDayMemeber');        
 const phone = document.getElementById('MemberPhone');          
 const faculty = document.getElementById('faculty');           
-const password = document.getElementById('password');
+const password = document.getElementById('password1');
 const confirmPassword = document.getElementById('confirmPassword');
 
 form.addEventListener('submit', e => {
@@ -272,3 +273,16 @@ const validateInputs = () => {
   el.addEventListener('blur', () => validateField(el));
 });
 gender.addEventListener('change', () => validateField(gender));
+
+
+
+
+
+
+
+
+
+
+
+
+

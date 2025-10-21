@@ -39,7 +39,6 @@
             <div class = "form-box register">
                     <h1>สมัครผู้ใช้</h1>
                     <form id="registrationForm" action="register_Member_save_v2.php" method="post" novalidate>
-            
                 <div class = "input-box">
                         <label for="auid">Username</label> <!-- 1.1 User auid input--> 
                         <input type="text" id="auid" name="auid" placeholder="ตั้ง Username เช่น User123" required>
@@ -126,8 +125,8 @@
       </div> 
                 <div>
                     <div class="input-box">
-                        <label for="password">รหัสผ่าน</label>
-                        <input type="password" id="password" name="password" placeholder="กรุณากรอกรหัสผ่าน" required>
+                        <label for="password1">รหัสผ่าน</label>
+                        <input type="password" id="password1" name="password1" placeholder="กรุณากรอกรหัสผ่าน" required>
                          <div class="error-message"></div> <!-- vaildation-->
                     </div>
                  </div>
@@ -154,6 +153,6 @@
                         </div>
             </div>
         </div>
-        <script src="script.js"></script>
     </body>
+    <script src="script_member.js"></script>
 </html>
