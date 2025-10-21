@@ -68,6 +68,7 @@ if(isset($_POST['add'])) {
 if(isset($_GET['delete'])) {
     $bgid = $_GET['delete'];
     
+<<<<<<< HEAD
     // 1. ดึง bdId ที่เกี่ยวข้องจาก boradgame
     $stmt_select = $conn->prepare("SELECT bdId FROM boradgame WHERE bgid=?");
     $stmt_select->bind_param("i", $bgid);
@@ -87,6 +88,11 @@ if(isset($_GET['delete'])) {
     
     // 3. ลบข้อมูลจาก boradgame
     $stmt = $conn->prepare("DELETE FROM boradgame WHERE bgid=?");
+=======
+    $stmt = $conn->prepare("DELETE FROM boradgame WHERE bgid=?" );
+
+
+>>>>>>> 93464220667e79eeadfd2186df8ffde3089b0e7a
     $stmt->bind_param("i", $bgid);
     
     if ($stmt->execute()) {
