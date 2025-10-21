@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            padding: 0px;
+            box-sizing: border-box;
+            margin: 0px;
+            list-style: none;
+            text-decoration: none;
+        }
+        .modal{
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(15, 16, 16,0.8);
+            position: fixed;
+            top: 0;
+            z-index: 999;
+            display: none;
+            opacity: 0;
+
+        }
+
+
+        .modal .inner_modal{
+            max-height: 100vh;
+            box-sizing: border-box;
+            display: block;
+            overflow-y: auto;
+            height: 100%;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .modal .modal_content{
+            width: 600px;
+            height: 300px;
+            max-width: 100%;
+            background-color: white;
+            display: block;
+            margin: 5vh auto;
+            padding: 50px;
+        }
+
+
+        .modal.ative{
+            display: block;
+            opacity: 1;
+        }
+
+
+        h1{
+            padding-bottom: 20px;
+        }
+        button{
+            display: block;
+            margin: auto;
+            padding: 50px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="modal">
+        <div class="inner_modal">
+            <div class="modal_content">
+                <h1>Profile</h1>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam architecto itaque, veritatis quo nam cumque, nulla dolor quidem recusandae dolore necessitatibus in. Molestias, aliquam omnis. Veniam harum doloremque eligendi exercitationem.</p>
+            </div>
+        </div>
+    </div>
+    <button open-modal="true" modal-id="profile">Open</button>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="../homepage/modal.js"></script>
+    
+</body>
+</html>/ 
