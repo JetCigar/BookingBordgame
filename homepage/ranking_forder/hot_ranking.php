@@ -1,88 +1,63 @@
 <?php
-// BookingBordgame/BookingGame/homepage/ranking_forder/hot_ranking.php
-// หน้าเว็บหลัก: รวมส่วนหัว HTML, ตารางอันดับ, ส่วนปิดท้าย
+require __DIR__ . '../db.php';
 
-require_once __DIR__ . '/../Connect/db.php'; // แก้ path ด้วย __DIR__
-// หมายเหตุ: __DIR__ = .../homepage/ranking_forder
-// ../Connect/db.php -> ชี้ไปที่ .../homepage/Connect/db.php
-// แต่ในโครงสร้างนี้ เราวาง Connect ไว้ใต้ BookingGame ดังนั้นใช้เส้นทางด้านล่างแทน:
-require_once dirname(__DIR__, 2) . '/lib/ranking.php';
+$sql = "
+SELECT
+  bg.bgid,
+  bg.bgName,
+  bgd.bddescript,
+  COALESCE(COUNT(bk.bkdId), 0) AS total_bookings
+FROM boradgame AS bg
+LEFT JOIN bordgamedescription AS bgd
+  ON bg.bdId = bgd.bdId
+LEFT JOIN bookings AS bk
+  ON bk.bgid = bg.bgid
+GROUP BY bg.bgid, bg.bgName, bgd.bddescript
+ORDER BY total_bookings DESC, bg.bgName ASC
+";
 
-// ใช้ฟังก์ชันเวอร์ชัน boradgame/bgid (ตาม dump ของคุณ)
-$result = getBoradgameRanking($mysqli);
-
+$stmt = $pdo->query($sql);
+$rows = $stmt->fetchAll();
 ?>
 <!doctype html>
-<html lang=\"th\">
+<html lang="th">
 <head>
-  <meta charset=\"utf-8\">
-  <title>อันดับการจองบอร์ดเกม</title>
-  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-  <style>
-    :root { --accent:#2563eb; --border:#e5e7eb; --muted:#6b7280; }
-    body { font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif; margin: 24px; color:#111; }
-    h1 { margin: 0 0 6px; font-size: 1.6rem; }
-    .sub { color: var(--muted); margin-bottom: 16px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid var(--border); padding: 10px; }
-    th { background: #f3f4f6; text-align: left; }
-    tr:nth-child(even) { background: #fafafa; }
-    .badge { display:inline-block; min-width:38px; text-align:center; padding:4px 8px; border-radius:999px; background:#eef2ff; color:var(--accent); font-weight:700; }
-    .wrap { max-width: 960px; margin: 0 auto; }
-  </style>
+  <meta charset="utf-8">
+  <title>Ranking ยอดการจองบอร์ดเกม</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-<div class=\"wrap\">
-  <h1>อันดับการจองบอร์ดเกม</h1>
-  <p class=\"sub\">เรียงจากยอด (นับจำนวนรายการจอง <code>bkdId</code>) มาก → น้อย</p>
-
-  <table>
-    <thead>
-      <tr>
-        <th>อันดับ</th>
-        <th>bgid</th>
-        <th>ชื่อเกม</th>
-        <th>ยอด (นับ bkdId)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php
-      if ($result && $result->num_rows > 0) {
-          // ตรวจว่ามีคอลัมน์ rank_no จาก SQL ไหม
-          $first = $result->fetch_assoc();
-          $hasRank = array_key_exists('rank_no', $first);
-          $result->data_seek(0);
-
-          $rank = 0; $prevTotal = null; $seen = 0;
-          while ($row = $result->fetch_assoc()) {
-              $bgId   = htmlspecialchars($row['bgId']);
-              $bgName = htmlspecialchars($row['bgName']);
-              $total  = (int)$row['total_bookings'];
-
-              if ($hasRank) {
-                  $rank_no = htmlspecialchars($row['rank_no']);
-              } else {
-                  // จัดอันดับฝั่ง PHP (dense-ish)
-                  $seen++;
-                  if ($prevTotal === null)      $rank = 1;
-                  elseif ($total < $prevTotal)  $rank = $seen;
-                  $prevTotal = $total;
-                  $rank_no = $rank;
-              }
-
-              echo "<tr>\n" .
-                   "  <td><span class=\"badge\">{$rank_no}</span></td>\n" .
-                   "  <td>{$bgId}</td>\n" .
-                   "  <td>{$bgName}</td>\n" .
-                   "  <td>{$total}</td>\n" .
-                   "</tr>\n";
-          }
-      } else {
-          echo '<tr><td colspan="4">ไม่มีข้อมูลการจอง</td></tr>';
-      }
-      ?>
-    </tbody>
-  </table>
-</div>
+  <div class="container">
+    <h1>🏆 Ranking ยอดการจองบอร์ดเกม</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>อันดับ</th>
+          <th>bgId</th>
+          <th>ชื่อบอร์ดเกม</th>
+          <th>รายละเอียด</th>
+          <th>จำนวนการจอง</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php if (empty($rows)): ?>
+          <tr><td colspan="5" class="empty">ยังไม่มีข้อมูล</td></tr>
+        <?php else: ?>
+          <?php $rank = 1; foreach ($rows as $r): ?>
+            <tr>
+              <td class="rank"><?= $rank++; ?></td>
+              <td><?= htmlspecialchars($r['bgid']); ?></td>
+              <td class="name"><?= htmlspecialchars($r['bgName']); ?></td>
+              <td class="desc"><?= htmlspecialchars($r['bddescript']); ?></td>
+              <td class="count"><?= htmlspecialchars($r['total_bookings']); ?></td>
+            </tr>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </tbody>
+    </table>
+    <p class="footnote">
+      * ถ้าเห็น 0 แปลว่ายังไม่มีการจองเกมนั้นในตาราง <code>bookings</code>
+    </p>
+  </div>
 </body>
 </html>
