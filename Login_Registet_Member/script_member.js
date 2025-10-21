@@ -1,6 +1,10 @@
+
 const container = document.querySelector('.container');
 const registerBtn = document.querySelector('.register-btn');
 const loginBtn = document.querySelector('.login-btn');
+
+console.log("tset")
+
 
 registerBtn.addEventListener('click' , () =>{
   container.classList.add('active');
@@ -19,7 +23,7 @@ const gender = document.getElementById('genderMember');
 const dob = document.getElementById('BrithDayMemeber');        
 const phone = document.getElementById('MemberPhone');          
 const faculty = document.getElementById('faculty');           
-const password = document.getElementById('password');
+const password = document.getElementById('password1');
 const confirmPassword = document.getElementById('confirmPassword');
 
 form.addEventListener('submit', e => {
@@ -123,6 +127,7 @@ const validateField = (el) => {
     case 'MemberPhone':  
       if (!/^\d{9,10}$/.test(value)) {  
         setError(el, 'เบอร์โทรศัพท์ต้องเป็นตัวเลข 9-10 หลัก');
+        console.log('tset')
         return false;
       }
       setSuccess(el);
@@ -268,3 +273,16 @@ const validateInputs = () => {
   el.addEventListener('blur', () => validateField(el));
 });
 gender.addEventListener('change', () => validateField(gender));
+
+
+
+
+
+
+
+
+
+
+
+
+

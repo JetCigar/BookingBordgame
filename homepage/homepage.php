@@ -1,58 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>homepage</title>
     <link href='https://fonts.googleapis.com/css?family=Kanit' rel='stylesheet'>
-    <style>
-        *{
-            box-sizing: 0px;
-            padding: 0px;
-            margin: 0px;
-            font-family: Kanit;
-        }
-        .logo{
-            width: 70px;
-            height: 70px;
-        }
-
-        .navbar-content{
-            list-style-type: none;
-            height: 85px;
-            background-color: rgb(0, 0, 130);
-            border: solid red 1px;
-            display: flex;
-            justify-content: space-between;
-            color: white;
-            align-items: center;
-        }
-        .menu-content{
-            list-style-type: none;
-            display: flex;
-        }
-        .menu-content li{
-            margin-left: 60px;
-        }
-
-        .cat-row{ display:flex; gap:12px; overflow-x:auto; padding:8px 4px; scroll-snap-type:x proximity; }
-        .cat-card{
-        scroll-snap-align:start; display:flex; align-items:center; gap:10px;
-        background:#fff; border:1px solid #e9e9ef; border-radius:12px;
-        padding:10px 14px; text-decoration:none; color:#222; min-width:170px;
-        box-shadow:0 1px 4px rgba(0,0,0,.05);
-        }
-        .cat-card:hover{ transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,.12); }
-        .icon{ font-size:18px; }
-        .texts .title{ font-weight:600; }
-        .title{
-            text-align: center;
-        }
-
-        .NewArrials-content{
-
-        }
-    </style>
+    <link rel="stylesheet" href="homepage_style.css">
 </head>
 <body>
     <head class="head-content">

@@ -124,8 +124,8 @@
       </div> 
                 <div>
                     <div class="input-box">
-                        <label for="password">รหัสผ่าน</label>
-                        <input type="password" id="password" name="password" placeholder="กรุณากรอกรหัสผ่าน" required>
+                        <label for="password1">รหัสผ่าน</label>
+                        <input type="password" id="password1" name="password1" placeholder="กรุณากรอกรหัสผ่าน" required>
                          <div class="error-message"></div> <!-- vaildation-->
                     </div>
                  </div>
@@ -152,6 +152,6 @@
                         </div>
             </div>
         </div>
-        <script src="script.js"></script>
     </body>
+    <script src="script_member.js"></script>
 </html>
