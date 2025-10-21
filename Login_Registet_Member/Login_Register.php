@@ -8,16 +8,18 @@
   <link rel="stylesheet" href="stylesV2.css">
   <link href='https://fonts.googleapis.com/css?family=Kanit' rel='stylesheet'>
 </head>
+
+
     <body>
         <div class="container">
-
+            
             <!--  =====  หน้า Login  =====-   r-->      
             <div class = "form-box login">
-                <form action="register_Member_save_v2.php">
+                <form action="login.php" method="post">
                     <h1>เข้าสู่ระบบ</h1>
                 <div class = "input-box">
                         <label for="auid">ไอดีผู้ใช้</label> 
-                        <input type="text" id="auid" name="auid" placeholder="กรุณากรอกไอดีผู้ใช้" required>
+                        <input type="text" id="auid" name="auid"  placeholder="กรุณากรอกไอดีผู้ใช้" required>
                          <div class="error-message"></div> <!-- vaildation-->
                 </div>
                 <div>

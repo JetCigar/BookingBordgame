@@ -1,12 +1,13 @@
 <?php
 // register_v2.php   บันทึกลงฐานข้อมูล member
-require __DIR__ . '/../Connect/db.php';;
+require __DIR__ . '/../Connect/db.php';
 
-function sendHtml($state_form, $title, $message) { //สร้างหน้าเว็บ HTML เมื่่อกรอก form register ของ member เสร็จ
+function sendHtml($state_form, $title, $message)
+{ //สร้างหน้าเว็บ HTML เมื่่อกรอก form register ของ member เสร็จ
 
-        //$state_form = ใช้เป็นตัวบ่งบอกสถานะ (true/false)
-        //$title = ข้อความหัวเรื่องที่จะนำไปแสดง
-        //$message = ข้อความรายละเอียดที่จะนำไปแสดง
+    //$state_form = ใช้เป็นตัวบ่งบอกสถานะ (true/false)
+    //$title = ข้อความหัวเรื่องที่จะนำไปแสดง
+    //$message = ข้อความรายละเอียดที่จะนำไปแสดง
 
     $color = $state_form ? '#0f766e' : '#dc2626';
     echo "<!doctype html><html lang='th'>
@@ -22,6 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+
+
+
+
 // 1) รับข้อมูลจากฟอร์ม
 $username   = trim($_POST['auid']             ?? '');
 $firstName  = trim($_POST['FullnameMember']   ?? '');
@@ -34,13 +39,14 @@ $phone      = trim($_POST['MemberPhone']      ?? '');
 $faculty    = trim($_POST['faculty']          ?? '');
 $password   = $_POST['password']         ?? '';
 $confirm    = $_POST['confirmPassword']       ?? '';
- 
+
+
 // 2) ตรวจสอบความถูกต้องเบื้องต้น
 $errors = [];
 if ($username === '')                           $errors[] = 'กรุณากรอก Username';
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'รูปแบบอีเมลไม่ถูกต้อง';
 if (!preg_match('/^\d{13}$/', $personId))       $errors[] = 'เลขบัตรประชาชนต้องมี 13 หลัก';
-if (!in_array($gender, ['male','female'], true))$errors[] = 'กรุณาเลือกเพศ';
+if (!in_array($gender, ['male', 'female'], true)) $errors[] = 'กรุณาเลือกเพศ';
 if ($birthday === '')                           $errors[] = 'กรุณากรอกวันเกิด';
 if ($password === '')                           $errors[] = 'กรุณากรอกรหัสผ่าน';
 if (strlen($password) < 8)                      $errors[] = 'รหัสผ่านควรมีอย่างน้อย 8 ตัวอักษร';
@@ -98,10 +104,11 @@ try {
     $mysqli->commit();
 
     sendHtml(true, 'สมัครสมาชิกสำเร็จ', 'คุณสามารถเข้าสู่ระบบได้แล้ว');
-
 } catch (Throwable $e) {
-    try { $mysqli->rollback(); } catch (Throwable $__) {}
+    try {
+        $mysqli->rollback();
+    } catch (Throwable $__) {
+    }
     $msg = 'เกิดข้อผิดพลาดไม่คาดคิด: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
     sendHtml(false, 'สมัครสมาชิกไม่สำเร็จ', $msg);
 }
-?>

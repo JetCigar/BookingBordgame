@@ -2,6 +2,9 @@ const container = document.querySelector('.container');
 const registerBtn = document.querySelector('.register-btn');
 const loginBtn = document.querySelector('.login-btn');
 
+console.log("tset")
+
+
 registerBtn.addEventListener('click' , () =>{
   container.classList.add('active');
 });
@@ -123,6 +126,7 @@ const validateField = (el) => {
     case 'MemberPhone':  
       if (!/^\d{9,10}$/.test(value)) {  
         setError(el, 'เบอร์โทรศัพท์ต้องเป็นตัวเลข 9-10 หลัก');
+        console.log('tset')
         return false;
       }
       setSuccess(el);

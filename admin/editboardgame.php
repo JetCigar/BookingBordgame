@@ -64,13 +64,29 @@ if(isset($_POST['add'])) {
     exit();
 }
 
-// 3. การลบบอร์ดเกม
+// 3. การลบบอร์ดเกม (รวมการลบข้อมูล bordgamedescription)
 if(isset($_GET['delete'])) {
     $bgid = $_GET['delete'];
     
-    $stmt = $conn->prepare("DELETE FROM boradgame WHERE bgid=?" );
+    // 1. ดึง bdId ที่เกี่ยวข้องจาก boradgame
+    $stmt_select = $conn->prepare("SELECT bdId FROM boradgame WHERE bgid=?");
+    $stmt_select->bind_param("i", $bgid);
+    $stmt_select->execute();
+    $bd_result = $stmt_select->get_result();
+    $bd_row = $bd_result->fetch_assoc();
+    $bdId_to_delete = $bd_row['bdId'] ?? null;
+    $stmt_select->close();
 
-
+    // 2. ลบข้อมูลจาก bordgamedescription (ถ้ามี bdId)
+    if ($bdId_to_delete !== null) {
+        $stmt_desc = $conn->prepare("DELETE FROM bordgamedescription WHERE bdId=?");
+        $stmt_desc->bind_param("i", $bdId_to_delete);
+        $stmt_desc->execute();
+        $stmt_desc->close();
+    }
+    
+    // 3. ลบข้อมูลจาก boradgame
+    $stmt = $conn->prepare("DELETE FROM boradgame WHERE bgid=?");
     $stmt->bind_param("i", $bgid);
     
     if ($stmt->execute()) {
@@ -194,7 +210,7 @@ if(isset($_POST['update'])) {
                 </div>
                 
                 <div class="form-group">
-                    <label>อายุผู้เล่นที่แนะนำ </label>
+                    <label>อายุผู้เล่นที่แนะนำ</label>
                     <input type="text" name="bdage" class="form-control" required value="<?php echo htmlspecialchars($edit_bdage); ?>">
                     <small class="form-text text-muted">ตัวอย่าง: 7+ หรือ 10+</small>
                 </div>

@@ -94,6 +94,7 @@
             color: #3284ed;
 
         }
+
         .popup .popup-content .controls .perv-btn {
             background: transparent;
             color: #3284ed;
@@ -146,8 +147,37 @@
             align-items: center;
         }
 
+
         /* endpopup */
 
+
+
+        /* popuptable */
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .table-card {
+            padding: 10px;
+            border: 1px solid #e9e9ef;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #fff;
+        }
+
+        .table-card[disabled] {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .table-card.selected {
+            outline: 2px solid #3284ed;
+        }
+
+        /* endpopuptable */
 
 
         .logo {
@@ -274,6 +304,8 @@
                                             INNER JOIN bordgamedescription
                                             ON boradgame.bdId = bordgamedescription.bdId ORDER BY bdId DESC")->fetchAll();
 
+            $tables = $pdo->query("SELECT tableId, state FROM tableroom ORDER BY tableId")->fetchAll();
+
             ?>
             <section>
                 <div class="cat-row">
@@ -318,11 +350,11 @@
                 <div class="popup-content">
 
                     <h2 id="popup-title"></h2>
-                    <div class="image-bg" style="max-width:100%; align-items:center;">
-                        <img id="popup-image" style="max-width:100%;border-radius:12px;display:none">
-                    </div>
                     <div class="popup-body">
                         <div class="step">
+                            <div class="image-bg" style="max-width:100%; align-items:center;">
+                                <img id="popup-image" style="max-width:100%;border-radius:12px;display:none">
+                            </div>
                             <p id="popup-desc" style="font-size: 16px; margin:1rem 1rem">หน้า 1: ข้อความแนะนำ…</p>
                             <div class="title-age" style="display: flex;">
                                 <h1 style="font-size: 20px;">อายุ</h1>
@@ -336,9 +368,21 @@
                                 <li style="padding: 0rem 0.25rem 0rem 0.25rem;color:#909090;">วินาที</li>
                             </ul>
                         </div>
-                        <div class="step">
-                            <h1>กรุณาเลือกโต๊ะที่ต้องการนั่ง</h1>
+                        <div class="step" id="step2">
+                            <div id="table-list" class="table-grid">
+                                <?php foreach ($tables as $tb):
+                                    $available = ((int)$tb['state'] === 1); ?>
+                                    <button type="button"
+                                        class="table-card"
+                                        data-table-id="<?= (int)$tb['tableId'] ?>"
+                                        <?= $available ? '' : 'disabled' ?>>
+                                        <div class="table-name">โต๊ะ <?= (int)$tb['tableId'] ?></div>
+                                        <div class="table-status"><?= $available ? 'ว่าง' : 'ไม่ว่าง' ?></div>
+                                    </button>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
+
                         <div class="step">
                             <p>หน้า 3: สรุป/ยืนยัน…</p>
                         </div>
@@ -361,11 +405,13 @@
                     let steps = Array.from(popupNode.querySelectorAll('.step'));
                     let nextBtn = popupNode.querySelector('.next-btn');
                     let currenIndex = 0;
+                    const titleEl = popupNode.querySelector("#popup-title");
 
                     function showStep(i) {
                         steps.forEach((el, idx) => {
                             if (idx === i) {
-                                                                if (closeBtn) closeBtn.hidden = (i !== 0); // หน้าแรก: โชว์ close / หน้าอื่น: ซ่อน
+                                if (closeBtn) closeBtn.hidden = (i !== 0); // หน้าแรก: โชว์ close / หน้าอื่น: ซ่อน
+
                                 if (prevBtn) prevBtn.hidden = (i === 0);
                                 el.hidden = false;
                                 el.classList.add('is-active');
@@ -379,6 +425,15 @@
                         if (nextBtn) {
                             nextBtn.textContent = (i === steps.length - 1) ? 'Book' : 'next';
                         }
+
+                        // สลับหน้า โต๊ะ
+                        if (titleEl) {
+                            titleEl.textContent = (i === 1) ?
+                                'กรุณาเลือกโต๊ะที่ต้องการนั่ง' :
+                                (titleEl.dataset.baseTitle || titleEl.textContent);
+                        }
+
+
                     }
                     if (nextBtn) {
                         nextBtn.addEventListener('click', () => {
