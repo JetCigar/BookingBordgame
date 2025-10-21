@@ -33,12 +33,12 @@ if(isset($_POST['update'])) {
     $mname = $_POST['mname'];
     $mlastname = $_POST['mlastname'];
     $mgender = $_POST['mgender'];
-    $mbirthday = $_POST['mbirthday'];
+    $mbirthday = $_POST['mbrithday'];
     $mphone = $_POST['mphone'];
     $mfaculty = $_POST['mfaculty'];
     
     // นำ auid ออกจากคำสั่ง UPDATE
-    $query = "UPDATE member SET mname=?, mlastname=?, mgender=?, mbirthday=?, mphone=?, mfaculty=? WHERE personId=?";
+    $query = "UPDATE member SET mname=?, mlastname=?, mgender=?, mbrithday=?, mphone=?, mfaculty=? WHERE personId=?";
     $stmt = $conn->prepare($query);
     // mname, mlastname, mgender, mbirthday, mphone, mfaculty, personId
     $stmt->bind_param("sssssss", $mname, $mlastname, $mgender, $mbirthday, $mphone, $mfaculty, $personId);
