@@ -10,11 +10,69 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
+$error_message = ''; // ตัวแปรสำหรับเก็บข้อความ Error ที่จะแสดงใน HTML
+
+// ----------------------------------------------------
+// ฟังก์ชันจัดการอัปโหลดรูปภาพ (ปรับปรุง Path)
+// ----------------------------------------------------
+function handleImageUpload($conn, $bdId, $existingImageUrl) {
+    global $error_message; 
+    
+    // 🚩 แก้ไข: Path ที่ PHP ใช้ย้ายไฟล์ (สัมพันธ์กับไฟล์ PHP ปัจจุบัน /admin/)
+    $target_dir = "../public/"; 
+    // 🚩 แก้ไข: Path ที่จะบันทึกใน DB (เริ่มต้นด้วย public/ และไม่มี / นำหน้า)
+    $db_path_prefix = "public/"; 
+    $image_url = $existingImageUrl; 
+    
+    // ตรวจสอบว่ามีการอัปโหลดไฟล์ใหม่หรือไม่
+    if (isset($_FILES['boardgame_image']) && $_FILES["boardgame_image"]["error"] == UPLOAD_ERR_OK) {
+        $file_name = basename($_FILES["boardgame_image"]["name"]);
+        $unique_file_name = time() . '_' . $file_name;
+        $target_file = $target_dir . $unique_file_name; 
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+        // ตรวจสอบไฟล์ภาพและขนาด...
+        if (getimagesize($_FILES["boardgame_image"]["tmp_name"]) === false) {
+            $error_message .= "<div class='alert alert-danger'>ไฟล์ที่อัปโหลดไม่ใช่รูปภาพ.</div>";
+            return false;
+        }
+        if ($_FILES["boardgame_image"]["size"] > 5000000) { // 5MB
+            $error_message .= "<div class='alert alert-danger'>ขนาดไฟล์ใหญ่เกินไป.</div>";
+            return false;
+        }
+        if(!in_array($imageFileType, ["jpg", "jpeg", "png", "gif"])) {
+            $error_message .= "<div class='alert alert-danger'>อนุญาตเฉพาะไฟล์ JPG, JPEG, PNG & GIF เท่านั้น.</div>";
+            return false;
+        }
+
+        // ย้ายไฟล์
+        if (move_uploaded_file($_FILES["boardgame_image"]["tmp_name"], $target_file)) {
+            $image_url = $db_path_prefix . $unique_file_name; 
+        } else {
+            $error_message .= "<div class='alert alert-danger'>เกิดข้อผิดพลาดในการอัปโหลดไฟล์.</div>";
+            return false;
+        }
+    } else if (isset($_FILES['boardgame_image']) && $_FILES["boardgame_image"]["error"] != UPLOAD_ERR_NO_FILE) {
+         $error_message .= "<div class='alert alert-danger'>เกิดข้อผิดพลาดในการอัปโหลดไฟล์. (Code: " . $_FILES["boardgame_image"]["error"] . ")</div>";
+         return false;
+    }
+    
+    // อัปเดตฐานข้อมูลด้วย image_url ใหม่
+    if ($bdId > 0 && $image_url !== $existingImageUrl) {
+        $stmt = $conn->prepare("UPDATE bordgamedescription SET image_url=? WHERE bdId=?");
+        $stmt->bind_param("si", $image_url, $bdId);
+        $stmt->execute();
+        $stmt->close();
+    }
+    
+    return $image_url;
+}
+// ----------------------------------------------------
+
 // ----------------------------------------------------
 // ดึงข้อมูลสำหรับ Dropdown Menu (bordgametype)
 // ----------------------------------------------------
 
-// ดึงข้อมูลประเภทบอร์ดเกม (bordgametype) - ยังคงจำเป็นสำหรับ Dropdown btId
 $bt_result = mysqli_query($conn, "SELECT btId, btName FROM bordgametype"); 
 $board_types = [];
 if ($bt_result) {
@@ -22,7 +80,8 @@ if ($bt_result) {
         $board_types[] = $row;
     }
 } else {
-    echo "<div class='alert alert-danger'>ไม่พบตาราง bordgametype หรือเกิดข้อผิดพลาดในการดึงข้อมูล</div>";
+    // หยุดการทำงานทันทีเมื่อเกิด SQL Error ที่สำคัญ (ป้องกัน Headers Sent)
+    die("<div class='alert alert-danger'>FATAL ERROR: ไม่พบตาราง bordgametype หรือเกิดข้อผิดพลาดในการดึงข้อมูล. กรุณาตรวจสอบชื่อตารางในฐานข้อมูล.</div>");
 }
 
 
@@ -30,22 +89,31 @@ if ($bt_result) {
 // ส่วนดำเนินการ (Add, Delete, Edit, Update) - ใช้ Prepared Statements
 // ----------------------------------------------------
 
-// 2. การเพิ่มบอร์ดเกม (จัดการข้อมูล boradgame และ INSERT ข้อมูล bordgamedescription)
+// 2. การเพิ่มบอร์ดเกม
 if(isset($_POST['add'])) {
-    // ข้อมูลสำหรับตาราง bordgamedescription (รายละเอียด, อายุ, เวลาเล่น)
     $bddescript = $_POST['bddescript']; 
     $bdage = $_POST['bdage'];
     $bdtime = $_POST['bdtime'];
-    $state = $_POST['state'] ?? 1; // ใช้ค่า default 1
+    $state = $_POST['state'] ?? 1;
 
-    // 1. INSERT ข้อมูลลงใน bordgamedescription เพื่อให้ได้ bdId อัตโนมัติ
+    // 1. INSERT ข้อมูลลงใน bordgamedescription 
     $stmt_desc = $conn->prepare("INSERT INTO bordgamedescription (bddescript, bdage, bdtime) VALUES (?, ?, ?)");
     $stmt_desc->bind_param("sss", $bddescript, $bdage, $bdtime); 
-    $stmt_desc->execute();
+    if(!$stmt_desc->execute()){
+         echo "Error inserting description: " . $stmt_desc->error;
+         $stmt_desc->close();
+         exit();
+    }
     
-    // 🚩 รับ bdId ที่ถูกสร้างขึ้นมาอัตโนมัติ (Auto-increment ID)
     $bdId = $conn->insert_id;
     $stmt_desc->close();
+    
+    // อัปโหลดรูปภาพและอัปเดต image_url กลับไปที่ bordgamedescription
+    $upload_result = handleImageUpload($conn, $bdId, ''); 
+    if ($upload_result === false) {
+        // ถ้าเกิดข้อผิดพลาดในการอัปโหลดไฟล์ จะไม่ทำต่อ
+        exit();
+    }
     
     // 2. INSERT ข้อมูลลงใน boradgame โดยใช้ bdId ที่เพิ่งสร้าง
     $bgName = $_POST['bgName'];
@@ -56,35 +124,71 @@ if(isset($_POST['add'])) {
     $stmt->bind_param("ssiii", $bgName, $releasestate, $bdId, $btId, $state);
 
     if ($stmt->execute()) {
-        header("Location: admin.php"); 
+        header("Location: editboardgame.php");
+        exit();
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Error inserting boardgame: " . $stmt->error;
+        $stmt->close();
+        exit();
     }
-    $stmt->close();
-    exit();
 }
 
-// 3. การลบบอร์ดเกม
+// 3. การลบบอร์ดเกม (รวมการลบข้อมูล bordgamedescription)
 if(isset($_GET['delete'])) {
     $bgid = $_GET['delete'];
     
+    // 1. ดึง bdId และ image_url เพื่อลบไฟล์
+    $stmt_select = $conn->prepare("SELECT bg.bdId, bd.image_url FROM boradgame bg INNER JOIN bordgamedescription bd ON bg.bdId = bd.bdId WHERE bg.bgid=?");
+    $stmt_select->bind_param("i", $bgid);
+    $stmt_select->execute();
+    $bd_result = $stmt_select->get_result();
+    $bd_row = $bd_result->fetch_assoc();
+    $bdId_to_delete = $bd_row['bdId'] ?? null;
+    $image_url_db = $bd_row['image_url'] ?? null;
+    $stmt_select->close();
+
+    // 2. ลบไฟล์รูปภาพ
+    if ($image_url_db) {
+        $project_root = dirname(__DIR__); 
+        $delete_path = $project_root . DIRECTORY_SEPARATOR . ltrim($image_url_db, '/');
+        
+        if (file_exists($delete_path)) {
+            unlink($delete_path); 
+        }
+    }
+    
+    // 3. ลบข้อมูลจาก bordgamedescription
+    if ($bdId_to_delete !== null) {
+        $stmt_desc = $conn->prepare("DELETE FROM bordgamedescription WHERE bdId=?");
+        $stmt_desc->bind_param("i", $bdId_to_delete);
+        if(!$stmt_desc->execute()){
+            echo "Error deleting description: " . $stmt_desc->error;
+            $stmt_desc->close();
+            exit();
+        }
+        $stmt_desc->close();
+    }
+    
+    // 4. ลบข้อมูลจาก boradgame
     $stmt = $conn->prepare("DELETE FROM boradgame WHERE bgid=?");
     $stmt->bind_param("i", $bgid);
     
     if ($stmt->execute()) {
-        header("Location: admin.php");
+        header("Location: editboardgame.php");
+        exit();
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Error deleting boardgame: " . $stmt->error;
+        $stmt->close();
+        exit();
     }
-    $stmt->close();
-    exit();
 }
 
-// 4. ดึงข้อมูลสำหรับแก้ไข (รวมดึง bddescript, bdage และ bdtime)
+// 4. ดึงข้อมูลสำหรับแก้ไข (รวมดึง bddescript, bdage, bdtime และ image_url)
 $edit_row = null;
 $edit_bddescript = ''; 
 $edit_bdage = '';
 $edit_bdtime = '';
+$edit_image_url = ''; 
 if(isset($_GET['edit'])) {
     $bgid = $_GET['edit'];
     
@@ -96,10 +200,10 @@ if(isset($_GET['edit'])) {
     $edit_row = $edit_result->fetch_assoc();
     $stmt->close();
 
-    // ดึง bddescript, bdage และ bdtime จาก bordgamedescription โดยใช้ bdId
+    // ดึงรายละเอียดและ URL รูปภาพจาก bordgamedescription
     if ($edit_row) {
         $bdId_to_fetch = $edit_row['bdId'];
-        $stmt_desc = $conn->prepare("SELECT bddescript, bdage, bdtime FROM bordgamedescription WHERE bdId=?"); 
+        $stmt_desc = $conn->prepare("SELECT bddescript, bdage, bdtime, image_url FROM bordgamedescription WHERE bdId=?"); 
         $stmt_desc->bind_param("i", $bdId_to_fetch);
         $stmt_desc->execute();
         $desc_result = $stmt_desc->get_result();
@@ -107,47 +211,62 @@ if(isset($_GET['edit'])) {
             $edit_bddescript = $desc_row['bddescript']; 
             $edit_bdage = $desc_row['bdage'];
             $edit_bdtime = $desc_row['bdtime'];
+            $edit_image_url = $desc_row['image_url']; 
         }
         $stmt_desc->close();
     }
 }
 
-// 5. การอัพเดทบอร์ดเกม (รวมการ Update ข้อมูลรายละเอียด)
+// 5. การอัพเดทบอร์ดเกม
 if(isset($_POST['update'])) {
     // ข้อมูลสำหรับตาราง boradgame
     $bgid = $_POST['bgid'];
     $bgName = $_POST['bgName'];
     $releasestate = $_POST['releasestate'];
-    $bdId = $_POST['bdId']; // ใช้ bdId ที่ถูกซ่อนไว้ในฟอร์ม
+    $bdId = $_POST['bdId']; 
     $btId = $_POST['btId'];
     $state = $_POST['state'] ?? 1; 
 
-    // ข้อมูลสำหรับตาราง bordgamedescription (รายละเอียด, อายุ, เวลาเล่น)
+    // ข้อมูลสำหรับตาราง bordgamedescription
     $bddescript = $_POST['bddescript'];
     $bdage = $_POST['bdage'];
     $bdtime = $_POST['bdtime'];
-
-    // 1. UPDATE ข้อมูลใน bordgamedescription (bddescript, bdage, bdtime)
+    $existing_image_url = $_POST['existing_image_url']; 
+    
+    // 1. อัปโหลดรูปภาพและอัปเดต image_url ในฐานข้อมูล
+    $upload_result = handleImageUpload($conn, $bdId, $existing_image_url);
+    if ($upload_result === false) {
+        exit();
+    }
+    
+    // 2. UPDATE ข้อมูลอื่น ๆ ใน bordgamedescription (bddescript, bdage, bdtime)
     $stmt_desc = $conn->prepare("UPDATE bordgamedescription SET bddescript=?, bdage=?, bdtime=? WHERE bdId=?");
     $stmt_desc->bind_param("sssi", $bddescript, $bdage, $bdtime, $bdId);
-    $stmt_desc->execute();
+    if(!$stmt_desc->execute()){
+        echo "Error updating description: " . $stmt_desc->error;
+        $stmt_desc->close();
+        exit();
+    }
     $stmt_desc->close();
     
-    // 2. UPDATE ข้อมูลใน boradgame
+    // 3. UPDATE ข้อมูลใน boradgame
     $stmt = $conn->prepare("UPDATE boradgame SET bgName=?, releasestate=?, bdId=?, btId=?, state=? WHERE bgid=?");
     $stmt->bind_param("ssiiii", $bgName, $releasestate, $bdId, $btId, $state, $bgid);
     
     if ($stmt->execute()) {
-        header("Location: admin.php");
+        header("Location: editboardgame.php");
+        exit();
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Error updating boardgame: " . $stmt->error;
+        $stmt->close();
+        exit();
     }
-    $stmt->close();
-    exit();
 }
 ?> 
  
 <div class="container-fluid">
+
+    <?php echo $error_message; ?>
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">เพิ่ม/ลบ/แก้ไขบอร์ดเกม</h1>
@@ -158,10 +277,11 @@ if(isset($_POST['update'])) {
             <h6 class="m-0 font-weight-bold text-primary"><?php echo $edit_row ? "แก้ไขบอร์ดเกม" : "เพิ่มบอร์ดเกม"; ?></h6>
         </div>
         <div class="card-body">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 <?php if($edit_row): ?>
                     <input type="hidden" name="bgid" value="<?php echo htmlspecialchars($edit_row['bgid']); ?>">
                     <input type="hidden" name="bdId" value="<?php echo htmlspecialchars($edit_row['bdId']); ?>">
+                    <input type="hidden" name="existing_image_url" value="<?php echo htmlspecialchars($edit_image_url); ?>">
                 <?php endif; ?>
                 
                 <div class="form-group">
@@ -177,7 +297,22 @@ if(isset($_POST['update'])) {
                     <label>รายละเอียดบอร์ดเกม</label>
                     <textarea name="bddescript" class="form-control" rows="3" required><?php echo htmlspecialchars($edit_bddescript); ?></textarea>
                 </div>
-
+                
+                <div class="form-group">
+                    <label>รูปภาพบอร์ดเกม</label>
+                    <?php if ($edit_row && $edit_image_url): 
+                        // 🚩 กำหนด Path สำหรับแสดงผลในฟอร์ม (ใช้ ../)
+                        $display_path_form = '../' . ltrim($edit_image_url, '/');
+                        ?>
+                        <div class="mb-2">
+                            <img src="<?php echo htmlspecialchars($display_path_form); ?>" style="max-width: 150px; height: auto;">
+                            <small class="form-text text-muted">รูปภาพปัจจุบัน</small>
+                        </div>
+                    <?php endif; ?>
+                    <input type="file" name="boardgame_image" class="form-control-file" <?php echo $edit_row && $edit_image_url ? '' : 'required'; ?>>
+                    <small class="form-text text-muted">อัปโหลดใหม่เพื่อเปลี่ยนรูปภาพ (สูงสุด 5MB)</small>
+                </div>
+                
                 <div class="form-group">
                     <label>ประเภทบอร์ดเกม</label>
                     <select name="btId" class="form-control" required>
@@ -192,7 +327,7 @@ if(isset($_POST['update'])) {
                 </div>
                 
                 <div class="form-group">
-                    <label>อายุผู้เล่นที่แนะนำ </label>
+                    <label>อายุผู้เล่นที่แนะนำ</label>
                     <input type="text" name="bdage" class="form-control" required value="<?php echo htmlspecialchars($edit_bdage); ?>">
                     <small class="form-text text-muted">ตัวอย่าง: 7+ หรือ 10+</small>
                 </div>
@@ -210,7 +345,7 @@ if(isset($_POST['update'])) {
                     <?php echo $edit_row ? 'อัพเดท' : 'เพิ่ม'; ?>
                 </button>
                 <?php if($edit_row): ?>
-                    <a href="admin.php" class="btn btn-secondary">ยกเลิก</a> 
+                    <a href="editboardgame.php" class="btn btn-secondary">ยกเลิก</a> 
                 <?php endif; ?>
             </form>
         </div>
@@ -227,6 +362,7 @@ if(isset($_POST['update'])) {
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>รูปภาพ</th> 
                             <th>bgid</th>
                             <th>bgName</th>
                             <th>releasestate</th>
@@ -238,13 +374,13 @@ if(isset($_POST['update'])) {
                     </thead>
                     <tbody>
                         <?php
-                        // ใช้ JOIN เพื่อดึงรายละเอียดจาก bordgamedescription
                         $query = "
                             SELECT 
                                 bg.*, 
                                 bd.bddescript, 
                                 bd.bdage, 
-                                bd.bdtime 
+                                bd.bdtime,
+                                bd.image_url 
                             FROM 
                                 boradgame bg
                             INNER JOIN 
@@ -254,6 +390,28 @@ if(isset($_POST['update'])) {
                         
                         while($row = mysqli_fetch_assoc($result)) {
                             echo "<tr>";
+                            // 🚩 แสดงรูปภาพ: แก้ไข Path สำหรับแสดงผลในตาราง
+                            echo "<td>";
+                            if (!empty($row['image_url'])) {
+                                $image_url_db = $row['image_url'];
+                                
+                                // 1. กำหนด Path สำหรับแสดงผล (HTML src)
+                                $display_path = '../' . ltrim($image_url_db, '/');
+                                
+                                // 2. กำหนด Path สำหรับตรวจสอบ (PHP file_exists)
+                                $project_root = dirname(__DIR__);
+                                $check_path = $project_root . DIRECTORY_SEPARATOR . ltrim($image_url_db, '/');
+
+                                if (file_exists($check_path)) {
+                                    echo "<img src='".htmlspecialchars($display_path)."' style='max-width: 50px; height: auto;'>";
+                                } else {
+                                    echo "ไฟล์ไม่พบ";
+                                }
+                            } else {
+                                echo "ไม่มีรูป";
+                            }
+                            echo "</td>";
+                            
                             echo "<td>".htmlspecialchars($row['bgid'])."</td>";
                             echo "<td>".htmlspecialchars($row['bgName'])."</td>";
                             echo "<td>".htmlspecialchars($row['releasestate'])."</td>";

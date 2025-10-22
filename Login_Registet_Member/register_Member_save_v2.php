@@ -106,4 +106,8 @@ try {
     }
     $msg = 'เกิดข้อผิดพลาดไม่คาดคิด: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
     sendHtml(false, 'สมัครสมาชิกไม่สำเร็จ', $msg);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> merge
