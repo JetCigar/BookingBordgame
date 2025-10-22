@@ -29,7 +29,7 @@
     </li>
     
     <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="edittable.php">
             <i class="fas fa-fw fa-couch"></i>
             <span>เพิ่ม/ลบ/แก้ไขโต๊ะ</span>
         </a>
@@ -57,8 +57,7 @@
         <div id="collapseUserControl" class="collapse" aria-labelledby="headingUserControl" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">การควบคุมและประวัติ:</h6>
-                <a class="collapse-item" href="#">ปลดล็อคผู้ใช้</a>
-                <a class="collapse-item" href="#">แบนผู้ใช้</a>
+                <a class="collapse-item" href="user_status.php">ควบคุมสถานะผู้ใช้</a>
                 <a class="collapse-item" href="user_history.php">ดูประวัติผู้ใช้</a>
             </div>
         </div>
