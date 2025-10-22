@@ -6,7 +6,6 @@
     // ดึงsesion มาจาก login
     session_start();
     $displayName = htmlspecialchars($_SESSION['display_name'] ?? '');
-
     ?>
 
     <meta charset="UTF-8">
@@ -306,7 +305,7 @@
         }
 
         /* ไอเท็มเมนู */
-        .menu-content li > a{
+        .menu-content li>a {
             position: relative;
             font-weight: 600;
             letter-spacing: .2px;
@@ -320,13 +319,13 @@
         }
 
         /* โฮเวอร์/โฟกัสเมนู */
-        .menu-content li> a:hover {
+        .menu-content li>a:hover {
             background: rgba(255, 255, 255, 0.16);
             transform: translateY(-1px);
             box-shadow: 0 6px 14px rgba(0, 0, 0, 0.10);
         }
 
-        .menu-content li >a:focus-visible {
+        .menu-content li>a:focus-visible {
             outline: 2px solid #93c5fd;
             /* วงโฟกัสมองเห็นชัด */
             outline-offset: 2px;
@@ -334,13 +333,13 @@
         }
 
         /* ถ้าจะทำ active ไว้ใช้คลาสนี้ได้ */
-        .menu-content li >a.active {
+        .menu-content li>a.active {
             background: rgba(255, 255, 255, 0.22);
             box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
         }
 
         /* ปุ่ม SignIn (ตัวสุดท้ายในแถว) */
-       .btn-sigin:last-child {
+        .btn-sigin:last-child {
             appearance: none;
             border: 0;
             background: #ffffff;
@@ -367,11 +366,99 @@
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
         }
 
-
-
-
-
         /* endNav */
+
+        /* start table css */
+        
+        .table-card {
+            padding: 10px;
+            border: 1px solid #e9e9ef;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #fff;
+            transition: background-color .2s, outline-color .2s, border-color .2s;
+        }
+
+        /* จุดสีเล็ก ๆ หน้าข้อความสถานะ */
+        .table-card .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            display: inline-block;
+            margin-right: 6px;
+            background: currentColor;
+        }
+
+        /* ว่าง (เขียว) */
+        .table-card.free {
+            background: #ecfdf5;
+            border-color: #bbf7d0;
+        }
+
+        .table-card.free .table-status {
+            color: #166534;
+        }
+
+        /* กำลังจอง/ถูก hold (ส้มอ่อน) */
+        .table-card.held {
+            background: #fff7ed;
+            border-color: #fed7aa;
+        }
+
+        .table-card.held .table-status {
+            color: #9a3412;
+        }
+
+        /* ไม่ว่าง/จองแล้ว (แดงอ่อน) */
+        .table-card.taken,
+        .table-card[disabled] {
+            background: #fee2e2;
+            border-color: #fecaca;
+            opacity: 1;
+        }
+
+        .table-card.taken .table-status {
+            color: #991b1b;
+        }
+
+        /* การ์ดที่ผู้ใช้ “เลือก” */
+        .table-card.selected {
+            outline: 2px solid #1d4ed8;
+            background: #dbeafe;
+            /* ฟ้าอ่อนให้รู้ว่ากำลังเลือก */
+        }
+
+        /* แถบ legend สี */
+        .legend {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .legend .chip {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            border: 1px solid transparent;
+        }
+
+        .legend .chip.free {
+            background: #ecfdf5;
+            border-color: #bbf7d0;
+        }
+
+        .legend .chip.held {
+            background: #fff7ed;
+            border-color: #fed7aa;
+        }
+
+        .legend .chip.taken {
+            background: #fee2e2;
+            border-color: #fecaca;
+        }
+
+        /* start end css */
     </style>
 </head>
 
@@ -381,7 +468,7 @@
         <nav>
             <ul class="navbar-content">
                 <li>
-                    <img class="logo" src="../image//bgrmutt.jpg" alt="">
+                    <img class="logo" src="../../image//bgrmutt.jpg" alt="">
                 </li>
                 <ul class="menu-content">
 
@@ -390,7 +477,8 @@
                     <li><a href="../homepage/ranking_forder/hot_ranking.php">Hot</a></li>
                     <li><a href="../homepage/contact.html">Contact</a></li>
                 </ul>
-                <li><a class="btn-sigin" href="../Login_Registet_Member/Login_Register.php">SignIn</a></li>
+                <!-- <li><a class="btn-sigin" href="../Login_Registet_Member/Login_Register.php">SignIn</a></li>btn sigIn -->
+                <div class="title"><?= htmlspecialchars($displayName) ?></div>
             </ul>
         </nav>
     </head>
@@ -414,6 +502,7 @@
                         <a class="cat-card" <?= (int)$t['btId'] ?>">
                             <div class="texts">
                                 <div class="title"><?= htmlspecialchars($t['btName']) ?></div>
+
                                 <!-- ถ้ายังไม่มีจำนวน ให้ซ่อนไว้ก่อน -->
                             </div>
                         </a>
@@ -500,19 +589,34 @@
                             </ul>
                         </div>
                         <div class="step" id="step2">
+                            <h2>กรุณาเลือกโต๊ะที่ต้องการนั่ง</h2>
+
+                            <!-- legend สี -->
+                            <div class="legend">
+                                <span class="chip free">ว่าง</span>
+                                <span class="chip held">กำลังจอง</span>
+                                <span class="chip taken">ไม่ว่าง</span>
+                            </div>
+
                             <div id="table-list" class="table-grid">
                                 <?php foreach ($tables as $tb):
-                                    $available = ((int)$tb['state'] === 1); ?>
+                                    $available = ((int)$tb['state'] === 1);
+                                    // ถ้าคุณยังไม่มีสถานะ 'HELD' ให้มีแค่ free/taken ไปก่อน
+                                    $statusClass = $available ? 'free' : 'taken';
+                                    $label       = $available ? 'ว่าง' : 'ไม่ว่าง';
+                                ?>
                                     <button type="button"
-                                        class="table-card"
+                                        class="table-card <?= $statusClass ?>"
                                         data-table-id="<?= (int)$tb['tableId'] ?>"
+                                        data-status="<?= $statusClass ?>"
                                         <?= $available ? '' : 'disabled' ?>>
                                         <div class="table-name">โต๊ะ <?= (int)$tb['tableId'] ?></div>
-                                        <div class="table-status"><?= $available ? 'ว่าง' : 'ไม่ว่าง' ?></div>
+                                        <div class="table-status"><span class="status-dot"></span><?= $label ?></div>
                                     </button>
                                 <?php endforeach; ?>
                             </div>
                         </div>
+
 
                         <div class="step">
                             <p>หน้า 3: สรุป/ยืนยัน…</p>
@@ -525,6 +629,8 @@
                     </div>
                 </div>
             </div>
+            
+            
 
             <script>
                 // ===== popup core (ของเดิม) =====
@@ -558,12 +664,11 @@
                         }
 
                         // สลับหน้า โต๊ะ
-                        if (titleEl) {
-                            titleEl.textContent = (i === 1) ?
-                                'กรุณาเลือกโต๊ะที่ต้องการนั่ง' :
-                                (titleEl.dataset.baseTitle || titleEl.textContent);
-                        }
-
+                        // if (titleEl) {
+                        //     titleEl.textContent = (i === 1) ?
+                        //         'กรุณาเลือกโต๊ะที่ต้องการนั่ง' :
+                        //         (titleEl.dataset.baseTitle || titleEl.textContent);
+                        // }
 
                     }
                     if (nextBtn) {
@@ -582,6 +687,7 @@
                         prevBtn.addEventListener('click', () => {
                             if (currenIndex > 0) {
                                 currenIndex -= 1;
+
                                 showStep(currenIndex);
                             }
                         });
@@ -614,6 +720,9 @@
                     const age = trigger.dataset.age || "";
                     const time = trigger.dataset.time || "";
 
+
+
+
                     // ใส่ลง DOM
                     const titleEl = document.getElementById("popup-title");
                     const descEl = document.getElementById("popup-desc");
@@ -639,6 +748,52 @@
                     openPopup(); // เปิด popup หลังอัปเดตข้อมูลเรียบร้อย
                 });
             </script>
+            <script>
+                // ไฮไลต์การ์ดโต๊ะที่ผู้ใช้เลือก + เปิดปุ่ม next เมื่อเลือกแล้ว
+                let selectedTableId = null;
+
+                const tableListEl = document.getElementById('table-list');
+
+                if (tableListEl) {
+                    tableListEl.addEventListener('click', (e) => {
+                        const card = e.target.closest('.table-card');
+                        if (!card) return;
+
+                        // กันคลิกการ์ดที่ไม่ว่าง/ถูก hold
+                        const status = card.dataset.status;
+                        if (card.hasAttribute('disabled') || status === 'taken' || status === 'held') return;
+
+                        // ล้างตัวเลือกเก่า + ตั้งตัวใหม่
+                        tableListEl.querySelectorAll('.table-card.selected').forEach(el => el.classList.remove('selected'));
+                        card.classList.add('selected');
+                        selectedTableId = card.dataset.tableId;
+
+                        // เปิดปุ่ม next
+                        const nextBtnEl = document.querySelector('#popup .next-btn');
+                        if (nextBtnEl) nextBtnEl.disabled = false;
+                    });
+                }
+
+                // เคลียร์ค่าเมื่อเปิด popup รอบใหม่
+                function resetTableSelection() {
+                    selectedTableId = null;
+                    document.querySelectorAll('#table-list .selected').forEach(el => el.classList.remove('selected'));
+                    const nextBtnEl = document.querySelector('#popup .next-btn');
+                    if (nextBtnEl) nextBtnEl.disabled = true;
+                }
+
+                // เรียกใช้ reset ตอนเปิด popup (สอดกับฟังก์ชันของคุณ)
+                const _openPopupOrig = openPopup;
+                window.openPopup = function() {
+                    resetTableSelection();
+                    _openPopupOrig();
+                };
+
+            </script>
+
+                
+
+
         </aside>
 
     </main>

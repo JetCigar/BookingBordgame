@@ -72,12 +72,12 @@ $user = $sqlquery->get_result()->fetch_assoc();
 
 
 // 2) ไม่พบชื่อผู้ใช้
-if (!$user) {
-    fail(); // ตั้ง session error แล้ว redirect
-}
+// if (!$user) {
+//     fail(); // ตั้ง session error แล้ว redirect
+// }
 
 // 3) ตรวจรหัสผ่านจริง ๆ
-if (!$user['password_hash']) {
+if (!$user || !(($user['password_hash'])== $password)) {
     fail(); // ตั้ง session error แล้ว redirect
 }
 
@@ -89,7 +89,7 @@ $_SESSION['display_name'] = $user['full_name'];
 $_SESSION['username'] = $user['username'];
 $_SESSION['role']     = $user['role'] ?? 'member';
 
-header('Location:dashboard.php');
+header('Location:../homepage/booking/homepage.php');
 
 
 
