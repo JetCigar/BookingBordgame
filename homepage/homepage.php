@@ -2,6 +2,13 @@
 <html lang="en">
 
 <head>
+    <?php
+    // ดึงsesion มาจาก login
+    session_start();
+    $displayName = htmlspecialchars($_SESSION['display_name'] ?? '');
+
+    ?>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>homepage</title>
@@ -94,6 +101,7 @@
             color: #3284ed;
 
         }
+
         .popup .popup-content .controls .perv-btn {
             background: transparent;
             color: #3284ed;
@@ -146,8 +154,37 @@
             align-items: center;
         }
 
+
         /* endpopup */
 
+
+
+        /* popuptable */
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .table-card {
+            padding: 10px;
+            border: 1px solid #e9e9ef;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #fff;
+        }
+
+        .table-card[disabled] {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .table-card.selected {
+            outline: 2px solid #3284ed;
+        }
+
+        /* endpopuptable */
 
 
         .logo {
@@ -213,6 +250,126 @@
         .title {
             text-align: center;
         }
+
+        /* nav */
+        /* === NAV BAR (เฉพาะส่วนนี้) ===================================== */
+
+        /* คุม nav ทั้งบล็อกแบบติดบนสุด + ขอบล่างเบาๆ */
+        .head-content nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: saturate(160%) blur(4px);
+        }
+
+        /* แถบหลัก */
+        .navbar-content {
+            list-style: none;
+            margin: 0;
+            padding: 0 20px;
+            height: 72px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            /* พื้นหลังไล่เฉดฟ้า */
+            background: linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%);
+            color: #fff;
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+        }
+
+        /* โลโก้ */
+        .logo {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        /* กลุ่มเมนูกลาง */
+        .menu-content {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            margin: 0;
+            padding: 0 16px;
+
+            /* ให้ยืดกลางระหว่างโลโก้กับปุ่มขวา */
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* ไอเท็มเมนู */
+        .menu-content li {
+            position: relative;
+            font-weight: 600;
+            letter-spacing: .2px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            transition: transform .15s ease, background-color .15s ease, box-shadow .15s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* โฮเวอร์/โฟกัสเมนู */
+        .menu-content li:hover {
+            background: rgba(255, 255, 255, 0.16);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.10);
+        }
+
+        .menu-content li:focus-visible {
+            outline: 2px solid #93c5fd;
+            /* วงโฟกัสมองเห็นชัด */
+            outline-offset: 2px;
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        /* ถ้าจะทำ active ไว้ใช้คลาสนี้ได้ */
+        .menu-content li.active {
+            background: rgba(255, 255, 255, 0.22);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+        }
+
+        /* ปุ่ม SignIn (ตัวสุดท้ายในแถว) */
+       .btn-sigin:last-child {
+            appearance: none;
+            border: 0;
+            background: #ffffff;
+            color: #1d4ed8;
+            font-weight: 700;
+            padding: 10px 16px;
+            border-radius: 999px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            transition: transform .1s ease, box-shadow .2s ease, background-color .2s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-sigin:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+            background: #fcca0c;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-sigin:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+        }
+
+
+
+
+
+        /* endNav */
     </style>
 </head>
 
@@ -225,12 +382,13 @@
                     <img class="logo" src="../image//bgrmutt.jpg" alt="">
                 </li>
                 <ul class="menu-content">
+
                     <li>Home</li>
                     <li>Category</li>
                     <li>Hot</li>
                     <li>Contact</li>
                 </ul>
-                <li><button>SignIn</button></li>
+                <li><a class="btn-sigin" href="../Login_Registet_Member/Login_Register.php">SignIn</a></li>
             </ul>
         </nav>
     </head>
@@ -240,6 +398,7 @@
         <div>BoardGame Category</div>
         <div>
             <?php
+
             $pdo = new PDO('mysql:host=localhost;dbname=bookingbordgame;charset=utf8mb4', 'root', '', [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
@@ -273,6 +432,8 @@
                                             FROM boradgame
                                             INNER JOIN bordgamedescription
                                             ON boradgame.bdId = bordgamedescription.bdId ORDER BY bdId DESC")->fetchAll();
+
+            $tables = $pdo->query("SELECT tableId, state FROM tableroom ORDER BY tableId")->fetchAll();
 
             ?>
             <section>
@@ -318,11 +479,11 @@
                 <div class="popup-content">
 
                     <h2 id="popup-title"></h2>
-                    <div class="image-bg" style="max-width:100%; align-items:center;">
-                        <img id="popup-image" style="max-width:100%;border-radius:12px;display:none">
-                    </div>
                     <div class="popup-body">
                         <div class="step">
+                            <div class="image-bg" style="max-width:100%; align-items:center;">
+                                <img id="popup-image" style="max-width:100%;border-radius:12px;display:none">
+                            </div>
                             <p id="popup-desc" style="font-size: 16px; margin:1rem 1rem">หน้า 1: ข้อความแนะนำ…</p>
                             <div class="title-age" style="display: flex;">
                                 <h1 style="font-size: 20px;">อายุ</h1>
@@ -336,9 +497,21 @@
                                 <li style="padding: 0rem 0.25rem 0rem 0.25rem;color:#909090;">วินาที</li>
                             </ul>
                         </div>
-                        <div class="step">
-                            <h1>กรุณาเลือกโต๊ะที่ต้องการนั่ง</h1>
+                        <div class="step" id="step2">
+                            <div id="table-list" class="table-grid">
+                                <?php foreach ($tables as $tb):
+                                    $available = ((int)$tb['state'] === 1); ?>
+                                    <button type="button"
+                                        class="table-card"
+                                        data-table-id="<?= (int)$tb['tableId'] ?>"
+                                        <?= $available ? '' : 'disabled' ?>>
+                                        <div class="table-name">โต๊ะ <?= (int)$tb['tableId'] ?></div>
+                                        <div class="table-status"><?= $available ? 'ว่าง' : 'ไม่ว่าง' ?></div>
+                                    </button>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
+
                         <div class="step">
                             <p>หน้า 3: สรุป/ยืนยัน…</p>
                         </div>
@@ -361,11 +534,13 @@
                     let steps = Array.from(popupNode.querySelectorAll('.step'));
                     let nextBtn = popupNode.querySelector('.next-btn');
                     let currenIndex = 0;
+                    const titleEl = popupNode.querySelector("#popup-title");
 
                     function showStep(i) {
                         steps.forEach((el, idx) => {
                             if (idx === i) {
-                                                                if (closeBtn) closeBtn.hidden = (i !== 0); // หน้าแรก: โชว์ close / หน้าอื่น: ซ่อน
+                                if (closeBtn) closeBtn.hidden = (i !== 0); // หน้าแรก: โชว์ close / หน้าอื่น: ซ่อน
+
                                 if (prevBtn) prevBtn.hidden = (i === 0);
                                 el.hidden = false;
                                 el.classList.add('is-active');
@@ -379,6 +554,15 @@
                         if (nextBtn) {
                             nextBtn.textContent = (i === steps.length - 1) ? 'Book' : 'next';
                         }
+
+                        // สลับหน้า โต๊ะ
+                        if (titleEl) {
+                            titleEl.textContent = (i === 1) ?
+                                'กรุณาเลือกโต๊ะที่ต้องการนั่ง' :
+                                (titleEl.dataset.baseTitle || titleEl.textContent);
+                        }
+
+
                     }
                     if (nextBtn) {
                         nextBtn.addEventListener('click', () => {

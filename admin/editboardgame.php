@@ -133,7 +133,7 @@ if(isset($_POST['add'])) {
     }
 }
 
-// 3. การลบบอร์ดเกม
+// 3. การลบบอร์ดเกม (รวมการลบข้อมูล bordgamedescription)
 if(isset($_GET['delete'])) {
     $bgid = $_GET['delete'];
     
@@ -327,7 +327,7 @@ if(isset($_POST['update'])) {
                 </div>
                 
                 <div class="form-group">
-                    <label>อายุผู้เล่นที่แนะนำ </label>
+                    <label>อายุผู้เล่นที่แนะนำ</label>
                     <input type="text" name="bdage" class="form-control" required value="<?php echo htmlspecialchars($edit_bdage); ?>">
                     <small class="form-text text-muted">ตัวอย่าง: 7+ หรือ 10+</small>
                 </div>
