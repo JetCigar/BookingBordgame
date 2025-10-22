@@ -1,6 +1,6 @@
 <?php
 // register_v2.php   บันทึกลงฐานข้อมูล member
-require __DIR__ . '/../Connect/db.php';;
+require __DIR__ . '/../Connect/db.php';
 
 function sendHtml($state_form, $title, $message) {
     // ฟังก์ชันนี้ใช้เฉพาะตอนสมัครไม่สำเร็จ
@@ -14,7 +14,7 @@ function sendHtml($state_form, $title, $message) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: Login_Register.php');
+    header('Location:/Login_Register.php');
     exit;
 }
 
@@ -36,7 +36,7 @@ $errors = [];
 if ($username === '')                           $errors[] = 'กรุณากรอก Username';
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'รูปแบบอีเมลไม่ถูกต้อง';
 if (!preg_match('/^\d{13}$/', $personId))       $errors[] = 'เลขบัตรประชาชนต้องมี 13 หลัก';
-if (!in_array($gender, ['male','female'], true))$errors[] = 'กรุณาเลือกเพศ';
+if (!in_array($gender, ['male', 'female'], true)) $errors[] = 'กรุณาเลือกเพศ';
 if ($birthday === '')                           $errors[] = 'กรุณากรอกวันเกิด';
 if ($password === '')                           $errors[] = 'กรุณากรอกรหัสผ่าน';
 if (strlen($password) < 8)                      $errors[] = 'รหัสผ่านควรมีอย่างน้อย 8 ตัวอักษร';
@@ -95,13 +95,15 @@ try {
     // ✅ แจ้งเตือนแล้วกลับไปหน้า index.html
     echo "<script>
         alert('สมัครสมาชิกสำเร็จ! คุณสามารถเข้าสู่ระบบได้แล้ว');
-        window.location.href = 'Login_Register.php';
+        window.location.href = '../../BookingBordgame/Login_Registet_Member/Login_Register.php';
     </script>";
     exit;
 
 } catch (Throwable $e) {
-    try { $mysqli->rollback(); } catch (Throwable $__) {}
+    try {
+        $mysqli->rollback();
+    } catch (Throwable $__) {
+    }
     $msg = 'เกิดข้อผิดพลาดไม่คาดคิด: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
     sendHtml(false, 'สมัครสมาชิกไม่สำเร็จ', $msg);
 }
-?>
