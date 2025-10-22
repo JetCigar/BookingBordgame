@@ -2,6 +2,13 @@
 <html lang="en">
 
 <head>
+    <?php
+    // ดึงsesion มาจาก login
+    session_start();
+    $displayName = htmlspecialchars($_SESSION['display_name'] ?? '');
+
+    ?>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>homepage</title>
@@ -255,12 +262,13 @@
                     <img class="logo" src="../image//bgrmutt.jpg" alt="">
                 </li>
                 <ul class="menu-content">
+                    <p><?php echo $displayName; ?></p>
                     <li>Home</li>
                     <li>Category</li>
                     <li>Hot</li>
                     <li>Contact</li>
                 </ul>
-                <li><button>SignIn</button></li>
+                <li><button>SignIn</button> </li>
             </ul>
         </nav>
     </head>
