@@ -369,7 +369,7 @@
         /* endNav */
 
         /* start table css */
-        
+
         .table-card {
             padding: 10px;
             border: 1px solid #e9e9ef;
@@ -560,15 +560,23 @@
 
         </div>
 
+
+
+            <!-- hidden formsubmit -->
+            <form id="confirmForm" action="../booking/memberbooking.php" method="post">
+                <input type="hidden" name="table_id" id="table_id">
+                <!-- <input type="hidden" name="game_id" id="game_id"> -->
+                <input type="hidden" name="game_name" id="game_name">
+            </form>
+
+
         <aside>
             <div class="center">
             </div>
 
             <div id="popup" class="popup">
                 <div class="overlay"></div>
-
                 <div class="popup-content">
-
                     <h2 id="popup-title"></h2>
                     <div class="popup-body">
                         <div class="step">
@@ -610,16 +618,41 @@
                                         data-table-id="<?= (int)$tb['tableId'] ?>"
                                         data-status="<?= $statusClass ?>"
                                         <?= $available ? '' : 'disabled' ?>>
-                                        <div class="table-name">โต๊ะ <?= (int)$tb['tableId'] ?></div>
+                                        <div class="table-name">โต๊ะ<?= (int)$tb['tableId'] ?></div>
+
                                         <div class="table-status"><span class="status-dot"></span><?= $label ?></div>
                                     </button>
                                 <?php endforeach; ?>
                             </div>
+
+                            <p>เลือกแล้ว: <strong id="picked">-</strong></p>
+                            <input type="hidden" name="table_id" id="table_id">
                         </div>
+
+                        <!-- pickup table -->
+
 
 
                         <div class="step">
-                            <p>หน้า 3: สรุป/ยืนยัน…</p>
+                            <h2 style="color: #fcca0c;">ยืนยันการยืม</h2>
+                            <!-- <div style="display:flex;justify-content:space-between;margin:auto">
+                                <p>ชื่อ</p>
+                                <p></p>
+                            </div> -->
+                            <table style="display: flex;justify-content:center; font-size:25px">
+
+                                <tr style="display: flex;justify-content:space-between;">
+                                    <td style="margin-right:10px;">คุณ</td>
+                                    <td style="display: flex;"><?= htmlspecialchars($displayName)?></td>
+                                </tr>
+                                <tr style="display: flex; justify-content:space-between;">
+                                    <td>โต๊ะที่จอง</td>
+                                    <td>
+                                        <p id="table"></p>
+                                    </td>
+                                </tr>
+                            </table>
+
                         </div>
                     </div>
                     <div class="controls">
@@ -629,8 +662,9 @@
                     </div>
                 </div>
             </div>
-            
-            
+
+
+
 
             <script>
                 // ===== popup core (ของเดิม) =====
@@ -643,6 +677,9 @@
                     let nextBtn = popupNode.querySelector('.next-btn');
                     let currenIndex = 0;
                     const titleEl = popupNode.querySelector("#popup-title");
+
+
+
 
                     function showStep(i) {
                         steps.forEach((el, idx) => {
@@ -678,6 +715,8 @@
                                 showStep(currenIndex);
 
                             } else {
+                                confirmToForm();
+                                document.getElementById('confirmForm').requestSubmit();
                                 closePopup();
                             }
                         });
@@ -696,6 +735,7 @@
                     function openPopup() {
                         popupNode.classList.add("active");
                         currenIndex = 0;
+                        confirmToForm()
                         if (steps.length) showStep(0);
                     }
 
@@ -720,9 +760,7 @@
                     const age = trigger.dataset.age || "";
                     const time = trigger.dataset.time || "";
 
-
-
-
+                    // const table = trigger.dataset.data-table-id || "";
                     // ใส่ลง DOM
                     const titleEl = document.getElementById("popup-title");
                     const descEl = document.getElementById("popup-desc");
@@ -788,10 +826,48 @@
                     resetTableSelection();
                     _openPopupOrig();
                 };
-
             </script>
 
-                
+
+
+            <script>
+                const list = document.getElementById('table-list');
+                const pickedEl = document.getElementById('picked');
+                const hiddenInp = document.getElementById('table_id');
+                const savetable = document.getElementById('table');
+                const hidTime = document.getElementById('clicked_at');
+                const pickedTimeEl = document.getElementById('picked-time');
+
+                list.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.table-card'); // ปุ่มที่ถูกคลิกจริง
+                    if (!btn) return;
+
+                    // กันคลิกโต๊ะที่ไม่ว่าง
+                    if (btn.hasAttribute('disabled') || btn.dataset.status !== 'free') return;
+
+                    // ไฮไลต์ตัวที่เลือก (ตัวเลือก)
+                    list.querySelectorAll('.table-card.selected').forEach(el => el.classList.remove('selected'));
+                    btn.classList.add('selected');
+
+
+                    // เอาค่าโต๊ะไปใช้ต่อ
+                    const id = btn.dataset.tableId; // << ค่าที่ต้องการ
+                    pickedEl.textContent = id; // โชว์บนหน้า
+                    hiddenInp.value = id; // เก็บไว้ส่งต่อ (เช่น submit ฟอร์ม)
+                    console.log('เลือกโต๊ะ:', id);
+                    savetable.textContent = id;
+                    
+                });
+            </script>
+
+            <script>
+                function confirmToForm() {
+                    const bgName = document.getElementById('game_name').value= document.getElementById('popup-title').textContent.trim();
+                    // const gameNameEl = document.getElementsByName('open-popup');
+                    // const gameName = gameNameEl.dataset.id;
+                    console.log(bgName);
+                }
+            </script>
 
 
         </aside>
