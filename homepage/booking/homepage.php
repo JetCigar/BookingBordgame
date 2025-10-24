@@ -553,7 +553,7 @@
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
             ]);
 
-            $types = $pdo->query("SELECT boradgame.bgName,boradgame.state,bordgamedescription.image_url,bordgamedescription.bdId,bordgamedescription.bddescript,bordgamedescription.bdage,TIME_FORMAT(bordgamedescription.bdtime, '%H:%i:%s') AS bdtime
+            $types = $pdo->query("SELECT boradgame.bgid,boradgame.bgName,boradgame.state,bordgamedescription.image_url,bordgamedescription.bdId,bordgamedescription.bddescript,bordgamedescription.bdage,TIME_FORMAT(bordgamedescription.bdtime, '%H:%i:%s') AS bdtime
                                             FROM boradgame
                                             INNER JOIN bordgamedescription
                                             ON boradgame.bdId = bordgamedescription.bdId ORDER BY bdId DESC")->fetchAll();
@@ -573,6 +573,7 @@
                             type="button"
                             class="cat-card open-popup"
                             style="border:none;background:none;padding:0"
+                            data-bgid="<?= htmlspecialchars($t['bgid'], ENT_QUOTES, 'UTF-8') ?>"
                             data-bgname="<?= htmlspecialchars($t['bgName'], ENT_QUOTES, 'UTF-8') ?>"
                             data-bddescription="<?= htmlspecialchars($t['bddescript'], ENT_QUOTES, 'UTF-8') ?>"
                             data-image="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
@@ -608,7 +609,7 @@
             <!-- <input type="hidden" name="game_id" id="game_id"> -->
             <input type="hidden" name="game_name" id="game_name">
             <input type="hidden" name="bgd_Id" id="bgd_Id">
-            <!-- <input type="hidden" name="bgid" id="bgid"> -->
+            <input type="hidden" name="bgid" id="bgid">
         </form>
 
 
@@ -638,7 +639,7 @@
                                 <li style="padding: 0rem 0.25rem 0rem 0.25rem;color:#909090;">นาที</li>
                                 <li style="padding: 0rem 0.25rem 0rem 0.25rem;color:#909090;">วินาที</li>
                                 <li id="popup-bdid" style="display:none">bdid</li>
-                                <!-- <li id="popup-bgid" style="">bgid</li> -->
+                                <li id="popup-bgid" style="display:none">bgid</li>
                             </ul>
                         </div>
 
@@ -845,7 +846,7 @@
                     const age = trigger.dataset.age || "";
                     const time = trigger.dataset.time || "";
                     const bdid = trigger.dataset.bdid || "";
-                    // const bgid = target.dataset.bgid || "";
+                    const bgid = trigger.dataset.bgid || "";
                     // const table = trigger.dataset.data-table-id || "";
                     // ใส่ลง DOM
                     const titleEl = document.getElementById("popup-title");
@@ -854,14 +855,14 @@
                     const imgEl = document.getElementById("popup-image");
                     const timeEl = document.getElementById("popup-time");
                     const bdidEl = document.getElementById("popup-bdid");
-                    // const bgidEl = document.getElementById("popup-bgid");
+                    const bgidEl = document.getElementById("popup-bgid");
 
                     if (titleEl) titleEl.textContent = name;
                     if (descEl) descEl.textContent = desc;
                     if (ageEl) ageEl.textContent = age;
                     if (timeEl) timeEl.textContent = time;
                     if (bdidEl) bdidEl.textContent = bdid;
-                    // if (bgidEl)  bgIdEl.textContent = bgid;
+                    if (bgidEl)  bgidEl.textContent = bgid;
 
                     if (imgEl) {
                         if (img) {
@@ -956,7 +957,7 @@
                     // const bgId = 
                     const bgName = document.getElementById('game_name').value = document.getElementById('popup-title').textContent.trim();
                     const bgdId = document.getElementById('bgd_Id').value = document.getElementById('popup-bdid').textContent.trim();
-                    // const bgId = document.getElementById('bgid').value = document.getElementById('popup-bgid').textContent.trim();
+                    const bgId = document.getElementById('bgid').value = document.getElementById('popup-bgid').textContent.trim();
                     // const gameNameEl = document.getElementsByName('open-popup');
                     // const gameName = gameNameEl.dataset.id;                    
                 }
