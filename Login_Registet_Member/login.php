@@ -85,6 +85,7 @@ if (!$user || !(($user['password_hash'])== $password)) {
 //ดึง sesion ไปหน้า homepage
 session_regenerate_id(true);
 $_SESSION['auid']     = $user['auid'];
+$_SESSION['personid']   = $user['personid'];
 $_SESSION['display_name'] = $user['full_name'];
 $_SESSION['username'] = $user['username'];
 $_SESSION['role']     = $user['role'] ?? 'member';

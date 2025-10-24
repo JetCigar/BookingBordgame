@@ -6,7 +6,9 @@
     // ดึงsesion มาจาก login
     session_start();
     $displayName = htmlspecialchars($_SESSION['display_name'] ?? '');
+    $displayperson_id = htmlspecialchars($_SESSION['personid'] ?? '');
     ?>
+    
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -459,6 +461,38 @@
         }
 
         /* start end css */
+
+
+        /* show avilavle card */
+        .showavalible {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600
+        }
+
+        .showavalible .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #9ca3af;
+            /* เทา (default) */
+        }
+
+        /* ใช้คลาสเพื่อคุมสี */
+        .showavalible.is-free .dot {
+            background: #16a34a;
+        }
+
+        /* เขียว */
+        .showavalible.is-taken .dot {
+            background: #dc2626;
+        }
+
+        /* แดง  */
+
+        /* end show avilable card */
+
     </style>
 </head>
 
@@ -519,12 +553,14 @@
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
             ]);
 
-            $types = $pdo->query("SELECT boradgame.bgName,bordgamedescription.image_url,bordgamedescription.bdId,bordgamedescription.bddescript,bordgamedescription.bdage,TIME_FORMAT(bordgamedescription.bdtime, '%H:%i:%s') AS bdtime
+            $types = $pdo->query("SELECT boradgame.bgName,boradgame.state,bordgamedescription.image_url,bordgamedescription.bdId,bordgamedescription.bddescript,bordgamedescription.bdage,TIME_FORMAT(bordgamedescription.bdtime, '%H:%i:%s') AS bdtime
                                             FROM boradgame
                                             INNER JOIN bordgamedescription
                                             ON boradgame.bdId = bordgamedescription.bdId ORDER BY bdId DESC")->fetchAll();
 
             $tables = $pdo->query("SELECT tableId, state FROM tableroom ORDER BY tableId")->fetchAll();
+
+            // $bgstate = $pdo->query("SELECT state FROM boradgame WHERE bdId=?")->fetchAll();
 
             ?>
             <section>
@@ -542,7 +578,9 @@
                             data-image="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
                             data-age="<?= htmlspecialchars($t['bdage'], ENT_QUOTES, 'UTF-8') ?>"
                             data-time="<?= htmlspecialchars($t['bdtime'], ENT_QUOTES, 'UTF-8') ?>"
-                            data-bdid="<?= (int)$t['bdId'] ?>">
+                            data-bdid=" <?= (int)$t['bdId'] ?>">
+
+
                             <div class="texts">
                                 <div>
                                     <?php if ($src): ?>
@@ -552,7 +590,9 @@
                                     <?php endif; ?>
                                 </div>
                                 <div class="title"><?= htmlspecialchars($t['bgName']) ?></div>
+                                <div class="showavalible"><?= htmlspecialchars($t['state']) ?></div>
                             </div>
+
                         </button>
                     <?php endforeach; ?>
                 </div>
@@ -562,12 +602,14 @@
 
 
 
-            <!-- hidden formsubmit -->
-            <form id="confirmForm" action="../booking/memberbooking.php" method="post">
-                <input type="hidden" name="table_id" id="table_id">
-                <!-- <input type="hidden" name="game_id" id="game_id"> -->
-                <input type="hidden" name="game_name" id="game_name">
-            </form>
+        <!-- hidden formsubmit -->
+        <form id="confirmForm" action="../booking/memberbooking.php" method="post">
+            <input type="hidden" name="table_id" id="table_id">
+            <!-- <input type="hidden" name="game_id" id="game_id"> -->
+            <input type="hidden" name="game_name" id="game_name">
+            <input type="hidden" name="bgd_Id" id="bgd_Id">
+            <!-- <input type="hidden" name="bgid" id="bgid"> -->
+        </form>
 
 
         <aside>
@@ -580,6 +622,7 @@
                     <h2 id="popup-title"></h2>
                     <div class="popup-body">
                         <div class="step">
+
                             <div class="image-bg" style="max-width:100%; align-items:center;">
                                 <img id="popup-image" style="max-width:100%;border-radius:12px;display:none">
                             </div>
@@ -594,8 +637,11 @@
                                 <li style="padding: 0rem 0.25rem 0rem 0.25rem; color:#909090;">ชั่วโมง</li>
                                 <li style="padding: 0rem 0.25rem 0rem 0.25rem;color:#909090;">นาที</li>
                                 <li style="padding: 0rem 0.25rem 0rem 0.25rem;color:#909090;">วินาที</li>
+                                <li id="popup-bdid" style="display:none">bdid</li>
+                                <!-- <li id="popup-bgid" style="">bgid</li> -->
                             </ul>
                         </div>
+
                         <div class="step" id="step2">
                             <h2>กรุณาเลือกโต๊ะที่ต้องการนั่ง</h2>
 
@@ -634,16 +680,20 @@
 
 
                         <div class="step">
-                            <h2 style="color: #fcca0c;">ยืนยันการยืม</h2>
+                            <h1 style="color: #fcca0c;">ยืนยันการยืม</h1>
                             <!-- <div style="display:flex;justify-content:space-between;margin:auto">
                                 <p>ชื่อ</p>
                                 <p></p>
                             </div> -->
                             <table style="display: flex;justify-content:center; font-size:25px">
 
+                                <tr><h2>หมายเลขบัตรประชาชน</h2></tr>
+                                <tr style="display: flex;justify-content:space-between ; font-size:25px">
+                                    <td style="display: flex;"><?= htmlspecialchars($displayperson_id)?></td>
+                                </tr >
                                 <tr style="display: flex;justify-content:space-between;">
                                     <td style="margin-right:10px;">คุณ</td>
-                                    <td style="display: flex;"><?= htmlspecialchars($displayName)?></td>
+                                    <td style="display: flex;"><?= htmlspecialchars($displayName) ?></td>
                                 </tr>
                                 <tr style="display: flex; justify-content:space-between;">
                                     <td>โต๊ะที่จอง</td>
@@ -667,6 +717,41 @@
 
 
             <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    document.querySelectorAll('.showavalible').forEach(el => {
+                        const raw = el.textContent.trim();
+                        const n = parseInt(raw, 10);
+
+                        // เคลียร์ของเดิม
+                        el.textContent = '';
+
+                        // สร้างองค์ประกอบใหม่
+                        const dot = document.createElement('span');
+                        dot.className = 'dot';
+                        const label = document.createElement('span');
+
+                        if (n === 1) {
+                            el.classList.add('is-free');
+                            label.textContent = 'ว่าง';
+                        } else if (n === 0) {
+                            el.classList.add('is-taken');
+                            label.textContent = 'ไม่ว่าง';
+                        } else {
+                            label.textContent = raw || '—'; // กรณีไม่ใช่ 0/1
+                        }
+
+                        el.append(dot, label);
+                    });
+                });
+            </script>
+            <!-- end show avilible -->
+
+
+
+
+
+
+            <script>
                 // ===== popup core (ของเดิม) =====
                 function createPopup(id) {
                     let popupNode = document.querySelector(id);
@@ -681,11 +766,11 @@
 
 
 
+
                     function showStep(i) {
                         steps.forEach((el, idx) => {
                             if (idx === i) {
                                 if (closeBtn) closeBtn.hidden = (i !== 0); // หน้าแรก: โชว์ close / หน้าอื่น: ซ่อน
-
                                 if (prevBtn) prevBtn.hidden = (i === 0);
                                 el.hidden = false;
                                 el.classList.add('is-active');
@@ -759,7 +844,8 @@
                     const img = trigger.dataset.image || "";
                     const age = trigger.dataset.age || "";
                     const time = trigger.dataset.time || "";
-
+                    const bdid = trigger.dataset.bdid || "";
+                    // const bgid = target.dataset.bgid || "";
                     // const table = trigger.dataset.data-table-id || "";
                     // ใส่ลง DOM
                     const titleEl = document.getElementById("popup-title");
@@ -767,11 +853,16 @@
                     const ageEl = document.getElementById("popup-age");
                     const imgEl = document.getElementById("popup-image");
                     const timeEl = document.getElementById("popup-time");
+                    const bdidEl = document.getElementById("popup-bdid");
+                    // const bgidEl = document.getElementById("popup-bgid");
 
                     if (titleEl) titleEl.textContent = name;
                     if (descEl) descEl.textContent = desc;
                     if (ageEl) ageEl.textContent = age;
                     if (timeEl) timeEl.textContent = time;
+                    if (bdidEl) bdidEl.textContent = bdid;
+                    // if (bgidEl)  bgIdEl.textContent = bgid;
+
                     if (imgEl) {
                         if (img) {
                             imgEl.src = img;
@@ -856,16 +947,25 @@
                     hiddenInp.value = id; // เก็บไว้ส่งต่อ (เช่น submit ฟอร์ม)
                     console.log('เลือกโต๊ะ:', id);
                     savetable.textContent = id;
-                    
+
                 });
             </script>
 
             <script>
                 function confirmToForm() {
-                    const bgName = document.getElementById('game_name').value= document.getElementById('popup-title').textContent.trim();
+                    // const bgId = 
+                    const bgName = document.getElementById('game_name').value = document.getElementById('popup-title').textContent.trim();
+                    const bgdId = document.getElementById('bgd_Id').value = document.getElementById('popup-bdid').textContent.trim();
+                    // const bgId = document.getElementById('bgid').value = document.getElementById('popup-bgid').textContent.trim();
                     // const gameNameEl = document.getElementsByName('open-popup');
-                    // const gameName = gameNameEl.dataset.id;
-                    console.log(bgName);
+                    // const gameName = gameNameEl.dataset.id;                    
+                }
+
+                function selectbdId(e) {
+                    const btn = e.target.closest('[data-bdid]'); // ใช้ selector แบบ [attr]
+                    if (!btn) return;
+                    const bdid = btn.dataset.bdid;
+                    console.log(bdid)
                 }
             </script>
 
