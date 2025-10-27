@@ -574,7 +574,10 @@
                             class="cat-card open-popup"
                             style="border:none;background:none;padding:0"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> parent of 3889a60 (search+new+login+regis)
                             data-bgid="<?= htmlspecialchars($t['bgid'], ENT_QUOTES, 'UTF-8') ?>"
 >>>>>>> parent of e8a1223 (seach-show)
                             data-bgname="<?= htmlspecialchars($t['bgName'], ENT_QUOTES, 'UTF-8') ?>"
@@ -865,11 +868,8 @@
                     if (ageEl) ageEl.textContent = age;
                     if (timeEl) timeEl.textContent = time;
                     if (bdidEl) bdidEl.textContent = bdid;
-<<<<<<< HEAD
                     // if (bgidEl)  bgIdEl.textContent = bgid;
-=======
                     if (bgidEl)  bgidEl.textContent = bgid;
->>>>>>> parent of e8a1223 (seach-show)
 
                     if (imgEl) {
                         if (img) {
