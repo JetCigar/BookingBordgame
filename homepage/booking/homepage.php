@@ -8,7 +8,6 @@
     $displayName = htmlspecialchars($_SESSION['display_name'] ?? '');
     $displayperson_id = htmlspecialchars($_SESSION['personid'] ?? '');
     $searchBg =  htmlspecialchars($_SESSION['bgName']  ?? ''); // เอาค่า ที่ search มาจาก search.php
-    $searchBg =  htmlspecialchars($_SESSION['bgName']  ?? ''); // เอาค่า ที่ search มาจาก search.php
     ?>
 
 
@@ -957,9 +956,8 @@
                         <button
                             type="button"
                             class="cat-card open-popup"
-                            style="border:none;background:none;padding:0"
+                            style="border:none;background:none;width:200px;padding:0px 200px 0px 200px; box-shadow:1px 1px 8px 1px rgba(66, 66, 66, 0.87);"
                             data-bgid="<?= htmlspecialchars($t['bgid'], ENT_QUOTES, 'UTF-8') ?>"
->>>>>>> parent of e8a1223 (seach-show)
                             data-bgname="<?= htmlspecialchars($t['bgName'], ENT_QUOTES, 'UTF-8') ?>"
                             data-bddescription="<?= htmlspecialchars($t['bddescript'], ENT_QUOTES, 'UTF-8') ?>"
                             data-image="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
