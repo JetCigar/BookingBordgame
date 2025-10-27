@@ -573,7 +573,6 @@
                             type="button"
                             class="cat-card open-popup"
                             style="border:none;background:none;padding:0"
-                            data-bgid="<?= htmlspecialchars($t['bgid'], ENT_QUOTES, 'UTF-8') ?>"
                             data-bgname="<?= htmlspecialchars($t['bgName'], ENT_QUOTES, 'UTF-8') ?>"
                             data-bddescription="<?= htmlspecialchars($t['bddescript'], ENT_QUOTES, 'UTF-8') ?>"
                             data-image="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
@@ -862,7 +861,7 @@
                     if (ageEl) ageEl.textContent = age;
                     if (timeEl) timeEl.textContent = time;
                     if (bdidEl) bdidEl.textContent = bdid;
-                    if (bgidEl)  bgidEl.textContent = bgid;
+                    // if (bgidEl)  bgIdEl.textContent = bgid;
 
                     if (imgEl) {
                         if (img) {
