@@ -260,7 +260,7 @@ if(isset($_POST['update'])) {
     $stmt->bind_param("ssiiii", $bgName, $releasestate, $bdId, $btId, $state, $bgid);
     
     if ($stmt->execute()) {
-        header("Location: editboardgame.php");
+        header("Location:/admin/editboardgame.php");
         exit();
     } else {
         echo "Error updating boardgame: " . $stmt->error;
