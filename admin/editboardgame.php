@@ -134,60 +134,66 @@ if(isset($_POST['add'])) {
 }
 
 // 3. การลบบอร์ดเกม (รวมการลบข้อมูล bordgamedescription)
-if(isset($_GET['delete'])) {
-    $bgid = $_GET['delete'];
-    
-    // 1. ดึง bdId และ image_url เพื่อลบไฟล์ (เหมือนเดิม)
-    $stmt_select = $conn->prepare("SELECT bg.bdId, bd.image_url FROM boradgame bg INNER JOIN bordgamedescription bd ON bg.bdId = bd.bdId WHERE bg.bgid=?");
-    $stmt_select->bind_param("i", $bgid);
-    $stmt_select->execute();
-    $bd_result = $stmt_select->get_result();
-    $bd_row = $bd_result->fetch_assoc();
-    $bdId_to_delete = $bd_row['bdId'] ?? null;
-    $image_url_db = $bd_row['image_url'] ?? null;
-    $stmt_select->close();
+if (isset($_GET['delete'])) {
+    $bgid = (int)$_GET['delete'];
 
-    // 2. ลบไฟล์รูปภาพ (เหมือนเดิม)
-    if ($image_url_db) {
-        $project_root = dirname(__DIR__); 
-        $delete_path = $project_root . DIRECTORY_SEPARATOR . ltrim($image_url_db, '/');
-        
-        if (file_exists($delete_path)) {
-            unlink($delete_path); 
-        }
-    }
-    
-    // ⬇️ --- สลับมานี่ (ลบลูกก่อน) --- ⬇️
-    // 3. ลบข้อมูลจาก boradgame (ตารางลูก)
-    $stmt = $conn->prepare("DELETE FROM boradgame WHERE bgid=?");
+    // ดึง bdId + image_url ก่อน
+    $stmt = $conn->prepare("
+        SELECT bg.bdId, bd.image_url
+        FROM boradgame bg
+        JOIN bordgamedescription bd ON bd.bdId = bg.bdId
+        WHERE bg.bgid=?
+    ");
     $stmt->bind_param("i", $bgid);
-    
-    if (!$stmt->execute()) {
-        echo "Error deleting boardgame: " . $stmt->error;
-        $stmt->close();
-        exit();
-    }
+    $stmt->execute();
+    $r = $stmt->get_result()->fetch_assoc();
     $stmt->close();
-    // ⬆️ ----------------------------- ⬆️
 
-    // ⬇️ --- สลับไปทีหลัง (ลบแม่) --- ⬇️
-    // 4. ลบข้อมูลจาก bordgamedescription (ตารางแม่)
-    if ($bdId_to_delete !== null) {
-        $stmt_desc = $conn->prepare("DELETE FROM bordgamedescription WHERE bdId=?");
-        $stmt_desc->bind_param("i", $bdId_to_delete);
-        if(!$stmt_desc->execute()){
-            echo "Error deleting description: " . $stmt_desc->error;
-            $stmt_desc->close();
-            exit();
+    $bdId  = $r['bdId'] ?? null;
+    $img   = $r['image_url'] ?? null;
+
+    mysqli_begin_transaction($conn);
+    try {
+        // 1) ลบ CHILD ทั้งหมดที่อ้างถึง boradgame ก่อน
+        if ($st = $conn->prepare("DELETE FROM bookingdetail WHERE bgId=?")) {
+            $st->bind_param("i", $bgid);
+            $st->execute();
+            $st->close();
         }
-        $stmt_desc->close();
+        // ถ้ามีตารางลูกอื่น ๆ ที่อ้างถึง boradgame เพิ่มตรงนี้ด้วย …
+
+        // 2) ลบ boradgame (child ของ bordgamedescription)
+        $st = $conn->prepare("DELETE FROM boradgame WHERE bgid=?");
+        $st->bind_param("i", $bgid);
+        $st->execute();
+        $st->close();
+
+        // 3) ลบ bordgamedescription (parent)
+        if ($bdId !== null) {
+            $st = $conn->prepare("DELETE FROM bordgamedescription WHERE bdId=?");
+            $st->bind_param("i", $bdId);
+            $st->execute();
+            $st->close();
+        }
+
+        mysqli_commit($conn);
+
+        // 4) ค่อยลบไฟล์หลัง commit
+        if ($img) {
+            $root = dirname(__DIR__); // /admin/.. → project root
+            $path = $root . DIRECTORY_SEPARATOR . ltrim($img, '/');
+            if (file_exists($path)) { @unlink($path); }
+        }
+
+        header("Location: editboardgame.php");
+        exit;
+    } catch (Throwable $e) {
+        mysqli_rollback($conn);
+        echo "Error deleting: " . htmlspecialchars($e->getMessage());
+        exit;
     }
-    // ⬆️ ----------------------------- ⬆️
-    
-    // เมื่อเสร็จแล้วค่อย Redirect
-    header("Location: editboardgame.php");
-    exit();
 }
+
 
 // 4. ดึงข้อมูลสำหรับแก้ไข (รวมดึง bddescript, bdage, bdtime และ image_url)
 $edit_row = null;
@@ -260,7 +266,7 @@ if(isset($_POST['update'])) {
     $stmt->bind_param("ssiiii", $bgName, $releasestate, $bdId, $btId, $state, $bgid);
     
     if ($stmt->execute()) {
-        header("Location:/admin/editboardgame.php");
+        header("Location: editboardgame.php");
         exit();
     } else {
         echo "Error updating boardgame: " . $stmt->error;

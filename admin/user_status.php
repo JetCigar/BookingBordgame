@@ -25,7 +25,7 @@ if(isset($_GET['ban']) || isset($_GET['unban'])) {
     
     if ($stmt->execute()) {
         // Redirect กลับมาหน้าเดิมหลังการดำเนินการ
-        header("Location: user_status.php");
+        header("location:../../../../BookingBordgame/admin/user_status.php");
     } else {
         // แสดง Error หากอัปเดตสถานะไม่สำเร็จ
         echo "<div class='alert alert-danger'>Error updating status: " . $stmt->error . "</div>";
