@@ -17,40 +17,34 @@ if (!$conn) {
 
 $query = "
   SELECT 
-  bd.bkdId, bd.personId, bd.tableId, bd.bgid,
-  m.mname, m.mlastname,
-  bg.bgName,
-  bg.state AS bg_state,
-  t.state  AS table_state,
+    bd.bkdId, bd.personId, bd.tableId, bd.bgid,
+    m.mname, m.mlastname,
+    bg.bgName,
+    bg.state AS bg_state,            -- 1 = เกมว่าง
+    t.state  AS table_state,         -- 1 = โต๊ะว่าง
 
-  lbg.latest_bkd_for_bg,
-  ltb.latest_bkd_for_table,
+    -- ตัวเลือก: ทำให้รู้ว่าแถวนี้เป็นเรคคอร์ดล่าสุดของ bgid / tableId หรือไม่ (ไม่ต้องเพิ่มคอลัมน์)
+    lbg.latest_bkd_for_bg,
+    ltb.latest_bkd_for_table
 
-  /* ← เพิ่มฟิลด์คำนวณผลการคืนต่อ “รายการนี้” */
-  CASE
-    WHEN COALESCE(lbg.latest_bkd_for_bg, 0)    > bd.bkdId
-      OR COALESCE(ltb.latest_bkd_for_table, 0) > bd.bkdId
-    THEN 1
-    WHEN bg.state = 1 AND t.state = 1
-    THEN 1
-    ELSE 0
-  END AS returned_calc
+  FROM bookingdetail bd
+  INNER JOIN member    m  ON bd.personId = m.personId
+  INNER JOIN boradgame bg ON bd.bgid    = bg.bgid
+  INNER JOIN tableroom t  ON bd.tableId = t.tableId
 
-FROM bookingdetail bd
-INNER JOIN member    m  ON bd.personId = m.personId
-INNER JOIN boradgame bg ON bd.bgid    = bg.bgid
-INNER JOIN tableroom t  ON bd.tableId = t.tableId
-LEFT JOIN (
-  SELECT bgid, MAX(bkdId) AS latest_bkd_for_bg
-  FROM bookingdetail
-  GROUP BY bgid
-) lbg ON lbg.bgid = bd.bgid
-LEFT JOIN (
-  SELECT tableId, MAX(bkdId) AS latest_bkd_for_table
-  FROM bookingdetail
-  GROUP BY tableId
-) ltb ON ltb.tableId = bd.tableId
-ORDER BY bd.bkdId DESC
+  LEFT JOIN (
+    SELECT bgid, MAX(bkdId) AS latest_bkd_for_bg
+    FROM bookingdetail
+    GROUP BY bgid
+  ) lbg ON lbg.bgid = bd.bgid
+
+  LEFT JOIN (
+    SELECT tableId, MAX(bkdId) AS latest_bkd_for_table
+    FROM bookingdetail
+    GROUP BY tableId
+  ) ltb ON ltb.tableId = bd.tableId
+
+  ORDER BY bd.bkdId DESC
 ";
 $result  = mysqli_query($conn, $query);
 $doneBkd = filter_input(INPUT_GET, 'done_bkd', FILTER_VALIDATE_INT);
@@ -87,8 +81,15 @@ $doneBkd = filter_input(INPUT_GET, 'done_bkd', FILTER_VALIDATE_INT);
                             $bgId     = (int)$row['bgid'];
                             $tableId  = (int)$row['tableId'];
 
-                            $returned = ((int)$row['returned_calc'] === 1);
+                            // 1) นิยาม "คืนสำเร็จ" แบบง่าย: state ของเกมและโต๊ะเป็น 1 ทั้งคู่
+                            $returnedSimple = ((int)$row['bg_state'] === 1 && (int)$row['table_state'] === 1);
 
+                            // 2) (แนะนำ) ให้แม่นยำขึ้น: ต้องเป็นเรคคอร์ดล่าสุดของทั้งเกมและโต๊ะด้วย
+                            $isLatestForBg    = ((int)$row['latest_bkd_for_bg']    === $bkdId);
+                            $isLatestForTable = ((int)$row['latest_bkd_for_table'] === $bkdId);
+                            $returnedNow = $returnedSimple && $isLatestForBg && $isLatestForTable;
+
+                            // แถวที่เพิ่งคืนสำเร็จ (จาก redirect)
                             $trClass = ($doneBkd && $doneBkd === $bkdId) ? ' class="table-success"' : '';
                         ?>
                             <tr<?= $trClass ?> id="bkd-<?= $bkdId ?>">
@@ -97,8 +98,9 @@ $doneBkd = filter_input(INPUT_GET, 'done_bkd', FILTER_VALIDATE_INT);
                                 <td><?= $fullName ?></td>
                                 <td><?= htmlspecialchars($row['bgName']) ?></td>
                                 <td><?= $tableId ?></td>
+
                                 <td>
-                                    <?php if ($returned): ?>
+                                    <?php if ($returnedNow): ?>
                                         <span class="badge badge-success">คืนสำเร็จ</span>
                                     <?php else: ?>
                                         <span class="badge badge-warning">ยังไม่คืน</span>
@@ -106,7 +108,7 @@ $doneBkd = filter_input(INPUT_GET, 'done_bkd', FILTER_VALIDATE_INT);
                                 </td>
 
                                 <td>
-                                    <?php if ($returned): ?>
+                                    <?php if ($returnedNow): ?>
                                         <button class="btn btn-sm btn-secondary" disabled>คืนแล้ว</button>
                                     <?php else: ?>
                                         <form action="../admin/return_booking.php" method="post"

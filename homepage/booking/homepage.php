@@ -7,9 +7,8 @@
     session_start();
     $displayName = htmlspecialchars($_SESSION['display_name'] ?? '');
     $displayperson_id = htmlspecialchars($_SESSION['personid'] ?? '');
-    $searchBg =  htmlspecialchars($_SESSION['bgName']  ?? ''); // เอาค่า ที่ search มาจาก search.php
     ?>
-
+    
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -244,7 +243,6 @@
         .icon {
             font-size: 18px;
         }
-
 
         .texts .title {
             font-weight: 600;
@@ -495,352 +493,6 @@
 
         /* end show avilable card */
 
-        /* .search-content {
-            height: 500px;
-            width: 100%;
-            border: #111 1px solid;
-        } */
-
-        :root {
-            /* --- สีหลักที่ใช้ทั้งบล็อก --- */
-            --sc-ink: #0f172a;
-            /* สีตัวอักษรหลัก */
-            --sc-muted: #64748b;
-            /* สีตัวอักษรรอง/คำอธิบาย */
-            --sc-accent: #3284ed;
-            /* ปุ่ม Buy Now (เขียวอมเหลือง) */
-            --sc-sky: #0ea5e9;
-            /* ปุ่ม Search (ฟ้า) */
-            --sc-card: #ffffff;
-            /* พื้นหลังการ์ด */
-            --sc-ring: #00000014;
-            /* เงาบางๆ/เส้นขอบโปร่ง */
-        }
-
-        .search-content {
-            /* border: 1px solid #111; */
-            padding: 16px;
-        }
-
-
-        /* =====================================================================
-   HERO (ส่วนบน)
-   - กริด 2 คอลัมน์: ซ้ายเนื้อหา / ขวารูปภาพ
-   - ความกว้างคงที่ เพื่อให้ไม่ responsive ตามที่ต้องการ
-===================================================================== */
-
-        .sc-hero {
-            width: 100%;
-            border-radius: 20px;
-            background: radial-gradient(1400px 500px at 25% -10%, #eef4ff 0%, #f7fafc 40%, #ffffff 72%);
-            box-shadow: 0 10px 40px var(--sc-ring);
-            overflow: hidden;
-        }
-
-        /* กล่องในสุดของ hero
-   NOTE: อยากให้บล็อกทั้งก้อนแคบ/กว้างขึ้น ปรับที่ width ตรงนี้จุดเดียว */
-        .sc-wrap {
-            width: 1160px;
-            /* ความกว้างคงที่ */
-            margin: 0 auto;
-            min-height: 500px;
-            /* ความสูงขั้นต่ำของ hero */
-            padding: 28px 18px;
-
-            display: grid;
-            grid-template-columns: 660px 420px;
-            /* ซ้าย 660px / ขวา 420px */
-            column-gap: 40px;
-            align-items: center;
-            /* จัดแนวให้เนื้อหาอยู่กึ่งกลางแนวตั้ง */
-        }
-
-        /* ข้อความหัวเรื่อง / บรรทัดรอง */
-        .sc-title {
-            font-size: 58px;
-            line-height: 1.05;
-            margin: 6px 0;
-            color: #111827;
-            font-weight: 800;
-        }
-
-        .sc-sub {
-            color: var(--sc-muted);
-            margin-bottom: 14px;
-        }
-
-        /* ปุ่มคู่ใต้หัวเรื่อง */
-        .sc-actions {
-            display: flex;
-            gap: 12px;
-            margin: 8px 0 22px;
-        }
-
-        .sc-btn {
-            appearance: none;
-            border: 0;
-            border-radius: 999px;
-            padding: 10px 16px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 1px 0 var(--sc-ring);
-        }
-
-        .sc-btn--ghost {
-            background: #fff;
-            color: #111827;
-        }
-
-        .sc-btn--accent {
-            background: var(--sc-accent);
-            color: #111827;
-        }
-
-        .sc-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 12px 26px var(--sc-ring);
-        }
-
-        /* แถบค้นหา (ฟอร์ม + ช่องพิมพ์ + ปุ่ม) */
-        .sc-searchbar {
-            width: 620px;
-            /* ความกว้างคงที่ของ searchbar */
-            background: #ffffffcc;
-            backdrop-filter: saturate(150%) blur(6px);
-            border: 1px solid #e5e7eb;
-            border-radius: 20px;
-            padding: 16px;
-            box-shadow: 0 14px 36px var(--sc-ring);
-        }
-
-        .sc-searchbar form {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .sc-input {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 999px;
-            padding: 10px 14px;
-        }
-
-        .sc-input svg {
-            width: 18px;
-            height: 18px;
-            opacity: .6;
-        }
-
-        .sc-input input {
-            border: 0;
-            outline: 0;
-            width: 100%;
-            font-size: 16px;
-            background: transparent;
-        }
-
-        .sc-go {
-            border: 0;
-            border-radius: 999px;
-            padding: 10px 18px;
-            background: var(--sc-sky);
-            color: #fff;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #0000000b;
-        }
-
-        .sc-go:hover {
-            filter: brightness(1.05);
-        }
-
-        /* รูปโปรโมตด้านขวา */
-        .sc-right {
-            display: flex;
-            justify-content: center;
-        }
-
-        .sc-hero-figure {
-            width: 100%;
-            /* ความกว้างคงที่ของรูปฝั่งขวา */
-            /* aspect-ratio: 3 / 4; */
-            border-radius: 20px;
-            overflow: hidden;
-            margin: 0;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 16px 48px #00000022;
-        }
-
-        .sc-hero-figure img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* =====================================================================
-   RESULTS (ส่วนล่าง)
-   - แสดงเฉพาะเมื่อมีพารามิเตอร์ q
-   - กริด 6 คอลัมน์คงที่
-===================================================================== */
-
-        .sc-results {
-            width: 1160px;
-            margin: 18px auto 0;
-            padding: 0 0 18px;
-        }
-
-        .sc-results-head {
-            display: flex;
-            align-items: baseline;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .sc-results-head h3 {
-            font-size: 20px;
-            font-weight: 800;
-            color: #111827;
-        }
-
-        .sc-count {
-            color: var(--sc-muted);
-        }
-
-        .sc-empty {
-            color: var(--sc-muted);
-            padding: 16px 0;
-        }
-
-        /* กำหนดกริด 6 ช่องคงที่ (180px ต่อช่อง) */
-        .sc-grid {
-            display: grid;
-            grid-template-columns: 180px 180px 180px 180px 180px 180px;
-            gap: 14px;
-        }
-
-        /* การ์ดแต่ละใบในผลลัพธ์ */
-        .sc-card {
-            width: 180px;
-            background: var(--sc-card);
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 24px var(--sc-ring);
-        }
-
-        .sc-cover {
-            width: 100%;
-            height: 240px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .sc-card-body {
-            padding: 10px;
-        }
-
-        .sc-card-title {
-            font-size: 14px;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 6px;
-        }
-
-        .sc-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--sc-muted);
-            font-size: 12px;
-        }
-
-        .sc-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-            background: #cbd5e1;
-            display: inline-block;
-        }
-
-        .sc-dot.is-green {
-            background: #16a34a;
-        }
-
-        /* ว่าง */
-        .sc-dot.is-red {
-            background: #dc2626;
-        }
-
-
-        /* title  newarive */
-        /* party-headings.css */
-        /* ใช้ร่วมกับตัวแปรที่คุณมีอยู่แล้ว: --sc-ink, --sc-accent, --sc-sky, --sc-card, --sc-ring */
-        :root {
-            --ink: var(--sc-ink, #0f172a);
-            --accent: var(--sc-accent, #bef264);
-            /* เหลือง-เขียว */
-            --sky: var(--sc-sky, #0ea5e9);
-            /* ฟ้า */
-            --card: var(--sc-card, #fff);
-            --ring: var(--sc-ring, #00000014);
-        }
-
-        /* ตัวหัวข้อหลัก */
-        .party-title {
-            --title-accent: var(--sky);
-            /* ค่าปริยาย (เปลี่ยนได้ใน modifier) */
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 16px 12px 12px;
-            margin: 28px 0 14px;
-            color: var(--ink);
-            font-weight: 900;
-            font-size: clamp(20px, 2.6vw, 30px);
-            line-height: 1.1;
-            background: var(--card);
-            border-radius: 999px;
-            box-shadow: 0 8px 24px var(--ring);
-            isolation: isolate;
-            /* ให้เงา/เอฟเฟกต์ซ้อนสวยขึ้น */
-        }
-
-
-
-        /* ข้อความ */
-        .party-title span {
-            letter-spacing: .3px;
-        }
-
-        /* ตัวแปรเฉพาะหัวข้อ */
-        .party-title.--category {
-            --title-accent: var(--sky);
-        }
-
-        .party-title.--new {
-            --title-accent: var(--accent);
-        }
-
-        .party-title.--new::before {
-            content: "✨";
-        }
-
-        /* ไอคอนเปลี่ยนให้รู้ว่าเป็น “ใหม่” */
-
-        /* end title nearive */
-
-
-        .cat-card .open-popup {
-            background-color: #0ea5e9;
-        }
     </style>
 </head>
 
@@ -854,10 +506,10 @@
                 </li>
                 <ul class="menu-content">
 
-                    <li><a href="../booking/homepage.php">Home</a></li>
+                    <li><a href="../homepage/homepage.php">Home</a></li>
                     <li><a href="">Category</a></li>
-                    <li><a href="../ranking_forder/hot_ranking.php">Hot</a></li>
-                    <li><a href="../../homepage/contact.html">Contact</a></li>
+                    <li><a href="../homepage/ranking_forder/hot_ranking.php">Hot</a></li>
+                    <li><a href="../homepage/contact.html">Contact</a></li>
                 </ul>
                 <!-- <li><a class="btn-sigin" href="../Login_Registet_Member/Login_Register.php">SignIn</a></li>btn sigIn -->
                 <div class="title"><?= htmlspecialchars($displayName) ?></div>
@@ -865,44 +517,9 @@
         </nav>
     </head>
     <main>
-        <div class="search-content">
-            <section class="sc-hero">
-                <div class="sc-wrap">
-                    <div class="sc-left">
-                        <h1>ค้นหาเกม</h1>
-                        <h1 id="searchBg" style="display: none;" data-searchbg="<?= htmlspecialchars($searchBg, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($searchBg) ?></h1>
-                        <h1 id="sc-title"><?= htmlspecialchars($searchBg, ENT_QUOTES, 'UTF-8') ?></h1>
-                        <p class="sc-sub">ว่าง</p>
 
-                        <div class="sc-actions">
-                            <button type="button" class="sc-btn sc-btn--ghost">More Info</button>
-                            <button type="button" class="sc-btn sc-btn--accent">Boo kNow</button>
-                        </div>
-
-                        <div class="sc-searchbar">
-                            <form method="get" action="searchbg.php">
-                                <div class="sc-input">
-                                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                                        <circle cx="11" cy="11" r="7" stroke-width="2" fill="none" stroke="currentColor"></circle>
-                                        <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2" stroke="currentColor"></line>
-                                    </svg>
-                                    <input id="q" type="search" name="q" placeholder="Search book..." value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
-                                </div> 
-                                <button class="sc-go" type="submit" onclick="search_Bg()">Search</button>
-                                <!-- <h1><?= htmlspecialchars($search) ?></h1> -->
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="sc-right">
-                        <figure class="sc-hero-figure">
-                            <img src="../../../BookingBordgame/public/werewolf.jpg" alt="Featured cover">
-                        </figure>
-                    </div>
-                </div>
-            </section>
-        </div>
-        <h2 class="party-title --category"><span>BoardGame Category</span></h2>
+        <div class="NewArrials-content">card</div>
+        <div>BoardGame Category</div>
         <div>
             <?php
 
@@ -928,7 +545,7 @@
             </section>
         </div>
 
-        <div class="party-title --new"><span>New Arrivals</span></div>
+        <div>New Arrials</div>
         <div>
             <?php
             $pdo = new PDO('mysql:host=localhost;dbname=bookingbordgame;charset=utf8mb4', 'root', '', [
@@ -936,7 +553,7 @@
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
             ]);
 
-            $types = $pdo->query("SELECT boradgame.bgid,boradgame.bgName,boradgame.state,bordgamedescription.image_url,bordgamedescription.bdId,bordgamedescription.bddescript,bordgamedescription.bdage,TIME_FORMAT(bordgamedescription.bdtime, '%H:%i:%s') AS bdtime
+            $types = $pdo->query("SELECT boradgame.bgName,boradgame.state,bordgamedescription.image_url,bordgamedescription.bdId,bordgamedescription.bddescript,bordgamedescription.bdage,TIME_FORMAT(bordgamedescription.bdtime, '%H:%i:%s') AS bdtime
                                             FROM boradgame
                                             INNER JOIN bordgamedescription
                                             ON boradgame.bdId = bordgamedescription.bdId ORDER BY bdId DESC")->fetchAll();
@@ -952,11 +569,10 @@
                         $img = $t['image_url'] ?? '';
                         $src = $img !== '' ? '/BookingBordgame/' . ltrim($img, '/') : '';
                     ?>
-
                         <button
                             type="button"
                             class="cat-card open-popup"
-                            style="border:none;background:none;width:200px;padding:0px 200px 0px 200px; box-shadow:1px 1px 8px 1px rgba(66, 66, 66, 0.87);"
+                            style="border:none;background:none;padding:0"
                             data-bgid="<?= htmlspecialchars($t['bgid'], ENT_QUOTES, 'UTF-8') ?>"
                             data-bgname="<?= htmlspecialchars($t['bgName'], ENT_QUOTES, 'UTF-8') ?>"
                             data-bddescription="<?= htmlspecialchars($t['bddescript'], ENT_QUOTES, 'UTF-8') ?>"
@@ -964,10 +580,12 @@
                             data-age="<?= htmlspecialchars($t['bdage'], ENT_QUOTES, 'UTF-8') ?>"
                             data-time="<?= htmlspecialchars($t['bdtime'], ENT_QUOTES, 'UTF-8') ?>"
                             data-bdid=" <?= (int)$t['bdId'] ?>">
-                            <div class="texts" style="margin-left:-120px;">
+
+
+                            <div class="texts">
                                 <div>
                                     <?php if ($src): ?>
-                                        <img style="width:250px; height:auto; object-fit:cover" src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
+                                        <img src="<?= htmlspecialchars($src, ENT_QUOTES, 'UTF-8') ?>"
                                             loading="lazy" decoding="async"
                                             style="max-width:300px;aspect-ratio:16/9;object-fit:cover;border-radius:12px">
                                     <?php endif; ?>
@@ -975,6 +593,7 @@
                                 <div class="title"><?= htmlspecialchars($t['bgName']) ?></div>
                                 <div class="showavalible"><?= htmlspecialchars($t['state']) ?></div>
                             </div>
+
                         </button>
                     <?php endforeach; ?>
                 </div>
@@ -990,7 +609,7 @@
             <!-- <input type="hidden" name="game_id" id="game_id"> -->
             <input type="hidden" name="game_name" id="game_name">
             <input type="hidden" name="bgd_Id" id="bgd_Id">
-            <input type="hidden" name="bgid" id="bgid">
+            <!-- <input type="hidden" name="bgid" id="bgid"> -->
         </form>
 
 
@@ -1020,7 +639,7 @@
                                 <li style="padding: 0rem 0.25rem 0rem 0.25rem;color:#909090;">นาที</li>
                                 <li style="padding: 0rem 0.25rem 0rem 0.25rem;color:#909090;">วินาที</li>
                                 <li id="popup-bdid" style="display:none">bdid</li>
-                                <li id="popup-bgid" style="display:none">bgid</li>
+                                <!-- <li id="popup-bgid" style="">bgid</li> -->
                             </ul>
                         </div>
 
@@ -1069,12 +688,10 @@
                             </div> -->
                             <table style="display: flex;justify-content:center; font-size:25px">
 
-                                <tr>
-                                    <h2>หมายเลขบัตรประชาชน</h2>
-                                </tr>
-                                <tr style="display: flex;justify-content:center; font-size:25px">
-                                    <td style="display: flex;"><?= htmlspecialchars($displayperson_id) ?></td>
-                                </tr>
+                                <tr><h2>หมายเลขบัตรประชาชน</h2></tr>
+                                <tr style="display: flex;justify-content:space-between ; font-size:25px">
+                                    <td style="display: flex;"><?= htmlspecialchars($displayperson_id)?></td>
+                                </tr >
                                 <tr style="display: flex;justify-content:space-between;">
                                     <td style="margin-right:10px;">คุณ</td>
                                     <td style="display: flex;"><?= htmlspecialchars($displayName) ?></td>
@@ -1097,32 +714,7 @@
                 </div>
             </div>
 
-            <!--  startสำหรับ ฟังก์ชั่น searchBg -->
-            <script>
-                // goble scope val
-                var val = "";
-                const qInput = document.querySelector('input[name="q"]');
-                qInput.addEventListener('input', () => {
-                val = qInput.value.trim();
-                });
 
-                const searchBgs = document.getElementById('searchBg');
-                const sc_title = document.getElementById('sc-title');
-                const vrsearch = searchBgs.dataset.searchbg || ""; // ค่า "ที่ซ่อน" ใน tag ดึงมา
-                // const bdid = trigger.dataset.bdid || "";
-                function search_Bg() {
-                    if (vrsearch === val) {
-                        console.log("พบข้อูล")
-                        sc_title.textContent = val;
-                        console.log(sc_title.textContent)
-                    }else{
-                        console.log("ไม่พบข้อมูล")
-                        console.log(vrsearch)
-                        console.log(val)
-                    }
-                }
-            </script>
-            <!-- end search -->
 
 
             <script>
@@ -1254,7 +846,7 @@
                     const age = trigger.dataset.age || "";
                     const time = trigger.dataset.time || "";
                     const bdid = trigger.dataset.bdid || "";
-                    const bgid = trigger.dataset.bgid || "";
+                    // const bgid = target.dataset.bgid || "";
                     // const table = trigger.dataset.data-table-id || "";
                     // ใส่ลง DOM
                     const titleEl = document.getElementById("popup-title");
@@ -1263,14 +855,14 @@
                     const imgEl = document.getElementById("popup-image");
                     const timeEl = document.getElementById("popup-time");
                     const bdidEl = document.getElementById("popup-bdid");
-                    const bgidEl = document.getElementById("popup-bgid");
+                    // const bgidEl = document.getElementById("popup-bgid");
 
                     if (titleEl) titleEl.textContent = name;
                     if (descEl) descEl.textContent = desc;
                     if (ageEl) ageEl.textContent = age;
                     if (timeEl) timeEl.textContent = time;
                     if (bdidEl) bdidEl.textContent = bdid;
-                    if (bgidEl) bgidEl.textContent = bgid;
+                    if (bgidEl)  bgidEl.textContent = bgid;
 
                     if (imgEl) {
                         if (img) {
@@ -1365,7 +957,7 @@
                     // const bgId = 
                     const bgName = document.getElementById('game_name').value = document.getElementById('popup-title').textContent.trim();
                     const bgdId = document.getElementById('bgd_Id').value = document.getElementById('popup-bdid').textContent.trim();
-                    const bgId = document.getElementById('bgid').value = document.getElementById('popup-bgid').textContent.trim();
+                    // const bgId = document.getElementById('bgid').value = document.getElementById('popup-bgid').textContent.trim();
                     // const gameNameEl = document.getElementsByName('open-popup');
                     // const gameName = gameNameEl.dataset.id;                    
                 }
