@@ -70,7 +70,7 @@
     </div>
 
     <li class="nav-item">
-        <a class="nav-link" href="../../../BookingBordgame/admin/statusbooking.php">
+        <a class="nav-link" href="#">
             <i class="fas fa-fw fa-calendar-check"></i>
             <span>ยกเลิก/แก้ไขสถานะการจอง</span>
         </a>

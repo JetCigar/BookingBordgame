@@ -147,7 +147,7 @@ $conn->close();
             margin: 0;
             padding: 0 20px;
             height: 72px;
-            border: none;
+
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -260,14 +260,14 @@ $conn->close();
         <nav>
             <ul class="navbar-content">
                 <li>
-                    <img class="logo" src="../../image/bgrmutt.jpg" alt="">
+                    <img class="logo" src="../image//bgrmutt.jpg" alt="">
                 </li>
                 <ul class="menu-content">
 
-                    <li><a href="../booking/homepage.php">Home</a></li>
+                    <li><a href="../homepage/contact.html">Home</a></li>
                     <li><a href="">Category</a></li>
-                    <li><a href="../ranking_forder/hot_ranking.php">Hot</a></li>
-                    <li><a href="../../homepage/contact.html">Contact</a></li>
+                    <li><a href="../homepage/ranking_forder/hot_ranking.php">Hot</a></li>
+                    <li><a href="../homepage/contact.html">Contact</a></li>
                 </ul>
                 <li><a class="btn-sigin" href="../Login_Registet_Member/Login_Register.php">SignIn</a></li>
             </ul>

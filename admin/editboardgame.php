@@ -137,7 +137,7 @@ if(isset($_POST['add'])) {
 if(isset($_GET['delete'])) {
     $bgid = $_GET['delete'];
     
-    // 1. ดึง bdId และ image_url เพื่อลบไฟล์
+    // 1. ดึง bdId และ image_url เพื่อลบไฟล์ (เหมือนเดิม)
     $stmt_select = $conn->prepare("SELECT bg.bdId, bd.image_url FROM boradgame bg INNER JOIN bordgamedescription bd ON bg.bdId = bd.bdId WHERE bg.bgid=?");
     $stmt_select->bind_param("i", $bgid);
     $stmt_select->execute();
@@ -147,7 +147,7 @@ if(isset($_GET['delete'])) {
     $image_url_db = $bd_row['image_url'] ?? null;
     $stmt_select->close();
 
-    // 2. ลบไฟล์รูปภาพ
+    // 2. ลบไฟล์รูปภาพ (เหมือนเดิม)
     if ($image_url_db) {
         $project_root = dirname(__DIR__); 
         $delete_path = $project_root . DIRECTORY_SEPARATOR . ltrim($image_url_db, '/');
@@ -157,7 +157,21 @@ if(isset($_GET['delete'])) {
         }
     }
     
-    // 3. ลบข้อมูลจาก bordgamedescription
+    // ⬇️ --- สลับมานี่ (ลบลูกก่อน) --- ⬇️
+    // 3. ลบข้อมูลจาก boradgame (ตารางลูก)
+    $stmt = $conn->prepare("DELETE FROM boradgame WHERE bgid=?");
+    $stmt->bind_param("i", $bgid);
+    
+    if (!$stmt->execute()) {
+        echo "Error deleting boardgame: " . $stmt->error;
+        $stmt->close();
+        exit();
+    }
+    $stmt->close();
+    // ⬆️ ----------------------------- ⬆️
+
+    // ⬇️ --- สลับไปทีหลัง (ลบแม่) --- ⬇️
+    // 4. ลบข้อมูลจาก bordgamedescription (ตารางแม่)
     if ($bdId_to_delete !== null) {
         $stmt_desc = $conn->prepare("DELETE FROM bordgamedescription WHERE bdId=?");
         $stmt_desc->bind_param("i", $bdId_to_delete);
@@ -168,19 +182,11 @@ if(isset($_GET['delete'])) {
         }
         $stmt_desc->close();
     }
+    // ⬆️ ----------------------------- ⬆️
     
-    // 4. ลบข้อมูลจาก boradgame
-    $stmt = $conn->prepare("DELETE FROM boradgame WHERE bgid=?");
-    $stmt->bind_param("i", $bgid);
-    
-    if ($stmt->execute()) {
-        header("Location: editboardgame.php");
-        exit();
-    } else {
-        echo "Error deleting boardgame: " . $stmt->error;
-        $stmt->close();
-        exit();
-    }
+    // เมื่อเสร็จแล้วค่อย Redirect
+    header("Location: editboardgame.php");
+    exit();
 }
 
 // 4. ดึงข้อมูลสำหรับแก้ไข (รวมดึง bddescript, bdage, bdtime และ image_url)
@@ -254,7 +260,7 @@ if(isset($_POST['update'])) {
     $stmt->bind_param("ssiiii", $bgName, $releasestate, $bdId, $btId, $state, $bgid);
     
     if ($stmt->execute()) {
-        header("Location: editboardgame.php");
+        header("Location:/admin/editboardgame.php");
         exit();
     } else {
         echo "Error updating boardgame: " . $stmt->error;
