@@ -21,14 +21,18 @@ if (isset($_POST['table_id'])) {
   $_SESSION['table_id'] = $_POST['table_id']; // เก็บค่าไว้ใน session
   $_SESSION['game_name'] = $_POST['game_name']; // เก็บค่าไว้ใน session
   $_SESSION['bgd_Id'] = $_POST['bgd_Id']; // เก็บค่าไว้ใน session
+  $_SESSION['bgid'] = $_POST['bgid']; // เก็บค่าไว้ใน session
 
   $tableId = (int)($_SESSION['table_id']);
   $bgdId   = (int)($_SESSION['bgd_Id']);
+  $bgId = (int)($_SESSION['bgid']);
 
-  echo "บันทึก table_id ลงใน session แล้ว: " . $_SESSION['table_id'];
-  echo "บันทึก game ลงใน session แล้ว: " . $_SESSION['game_name'];
-  echo "บันทึก bgd_id ลงใน session แล้ว: " . $_SESSION['bgd_Id'];
-  echo "บันทึก personid ลงใน session แล้ว: " . $_SESSION['personid'];
+  // echo "บันทึก table_id ลงใน session แล้ว: " . $_SESSION['table_id'];
+  // echo "บันทึก game ลงใน session แล้ว: " . $_SESSION['game_name'];
+  // echo "บันทึก bgd_id ลงใน session แล้ว: " . $_SESSION['bgd_Id'];
+  // echo "บันทึก personid ลงใน session แล้ว: " . $_SESSION['personid'];
+  // echo "บันทึก bgid ลงใน session แล้ว: " . $_SESSION['bgid'];
+  header('Location:../../../../../BookingBordgame/homepage/booking/homepage.php');
 } else {
   echo "ไม่พบค่า table_id ที่ส่งมา";
 }
@@ -56,11 +60,11 @@ try {
   $updbd->execute();
 
 
-  $bgdetail = $mysqli->prepare("INSERT INTO bordgamedescription VALUE (?,?,?) ");
-  $bgdetail->bind_param('s','i','i',$personId,$bgdId,$tableId);   // <- ใช้ $updbd ให้ถูก และตรวจชื่อแปรให้ตรง ($bdId / $bgd_Id)
+  $bgdetail = $mysqli->prepare("INSERT INTO bookingdetail (personId,bgId,tableId) VALUES (?,?,?)");
+  $bgdetail->bind_param('sii',$personId,$bgId,$tableId);
   $bgdetail->execute();
 
-
+  
   $showAvalible = $mysqli->prepare("SELECT state FROM boradgame WHERE bdId=?");
   $showAvalible->bind_param('i', $bgdId);
   $showAvalible->execute();
