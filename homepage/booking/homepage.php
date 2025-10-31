@@ -8,7 +8,21 @@
     $displayName = htmlspecialchars($_SESSION['display_name'] ?? '');
     $displayperson_id = htmlspecialchars($_SESSION['personid'] ?? '');
     $searchBg =  htmlspecialchars($_SESSION['bgName']  ?? ''); // เอาค่า ที่ search มาจาก search.php
+    $bg_image =  htmlspecialchars($_SESSION['bg_image'] ?? '');
+    $show_Avalible = htmlspecialchars($_SESSION['bg_state'] ?? '');
+    $shouldHide = htmlspecialchars($_SESSION['shouldHide'] ?? '');
+
+    //ranking no1
+    $rank_1name = htmlspecialchars($_SESSION['rank_1BgName'] ?? '');
+    $rank_1Image = htmlspecialchars($_SESSION['rank_1BgImg'] ?? '');
+
+    unset($_SESSION['bgName'], $_SESSION['bg_image'], $_SESSION['bg_state']);
+    $_SESSION['bgName']   = '';               // เช่น ไม่มีชื่อเริ่มต้น
+    $_SESSION['bg_image'] = $rank_1Image; // รูปเริ่มต้น
+    $_SESSION['bg_state'] = '';
+    $_SESSION['shouldHide'] = true;
     ?>
+
 
 
     <meta charset="UTF-8">
@@ -666,13 +680,13 @@
         }
 
         .sc-hero-figure {
-            width: 100%;
+            width: 70%;
             /* ความกว้างคงที่ของรูปฝั่งขวา */
             /* aspect-ratio: 3 / 4; */
             border-radius: 20px;
             overflow: hidden;
             margin: 0;
-            border: 1px solid #e5e7eb;
+            border: 0px solid #e5e7eb;
             box-shadow: 0 16px 48px #00000022;
         }
 
@@ -869,14 +883,16 @@
             <section class="sc-hero">
                 <div class="sc-wrap">
                     <div class="sc-left">
+                        <h1 <?= $shouldHide ? '' : 'style="display:none;"' ?>>มาเเรง อันดับ 1</h1>
                         <h1>ค้นหาเกม</h1>
+                        <h1 data-rank_1Image="<?= htmlspecialchars($rank_1Image, ENT_QUOTES, 'UTF-8') ?>" style="display: none;"></h1>
                         <h1 id="searchBg" style="display: none;" data-searchbg="<?= htmlspecialchars($searchBg, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($searchBg) ?></h1>
-                        <h1 id="sc-title"><?= htmlspecialchars($searchBg, ENT_QUOTES, 'UTF-8') ?></h1>
-                        <p class="sc-sub">ว่าง</p>
-
+                        <h2 style="color:#3284ed" id="sc-title"><?= htmlspecialchars($searchBg, ENT_QUOTES, 'UTF-8') ?>
+                        </h2>
+                        <p class="showavalible" <?= $shouldHide ? 'style="display:none;"' : '' ?>> <?= htmlspecialchars($show_Avalible) ?></p>
                         <div class="sc-actions">
-                            <button type="button" class="sc-btn sc-btn--ghost">More Info</button>
-                            <button type="button" class="sc-btn sc-btn--accent">Boo kNow</button>
+                            <button type="button" class="sc-btn sc-btn--ghost" <?= $shouldHide ? 'style="display:none;"' : '' ?>>More Info</button>
+                            <button type="button" class="sc-btn sc-btn--accent" <?= $shouldHide ? 'style="display:none;"' : '' ?>>Boo kNow</button>
                         </div>
 
                         <div class="sc-searchbar">
@@ -887,7 +903,7 @@
                                         <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2" stroke="currentColor"></line>
                                     </svg>
                                     <input id="q" type="search" name="q" placeholder="Search book..." value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
-                                </div> 
+                                </div>
                                 <button class="sc-go" type="submit" onclick="search_Bg()">Search</button>
                                 <!-- <h1><?= htmlspecialchars($search) ?></h1> -->
                             </form>
@@ -896,9 +912,11 @@
 
                     <div class="sc-right">
                         <figure class="sc-hero-figure">
-                            <img src="../../../BookingBordgame/public/werewolf.jpg" alt="Featured cover">
+                            <!-- <img src="../../../BookingBordgame/public/werewolf.jpg" alt="Featured cover"> -->
+                            <img id="hot-top-img" <?= $shouldHide ? 'style="display:;"' : '' ?> style="max-wide:100%; height:100%; object-fit:cover" src="/BookingBordgame/<?= htmlspecialchars($bg_image, ENT_QUOTES, 'UTF-8') ?>" />
                         </figure>
                     </div>
+
                 </div>
             </section>
         </div>
@@ -972,8 +990,10 @@
                                             style="max-width:300px;aspect-ratio:16/9;object-fit:cover;border-radius:12px">
                                     <?php endif; ?>
                                 </div>
+
                                 <div class="title"><?= htmlspecialchars($t['bgName']) ?></div>
-                                <div class="showavalible"><?= htmlspecialchars($t['state']) ?></div>
+                                <!-- //เพิ่ม data ลงไปเพื่อ update Dom เเบบ ทุก 2-3 วินาที -->
+                                <div class="showavalible" data-bgid="<?= (int)$t['bgid'] ?>"><?= htmlspecialchars($t['state']) ?></div>
                             </div>
                         </button>
                     <?php endforeach; ?>
@@ -1026,7 +1046,6 @@
 
                         <div class="step" id="step2">
                             <h2>กรุณาเลือกโต๊ะที่ต้องการนั่ง</h2>
-
                             <!-- legend สี -->
                             <div class="legend">
                                 <span class="chip free">ว่าง</span>
@@ -1034,10 +1053,11 @@
                                 <span class="chip taken">ไม่ว่าง</span>
                             </div>
 
+
                             <div id="table-list" class="table-grid">
                                 <?php foreach ($tables as $tb):
                                     $available = ((int)$tb['state'] === 1);
-                                    // ถ้าคุณยังไม่มีสถานะ 'HELD' ให้มีแค่ free/taken ไปก่อน
+                                    // ค่อยทำ 'HELD' ให้มีแค่ free/taken ไปก่อน 
                                     $statusClass = $available ? 'free' : 'taken';
                                     $label       = $available ? 'ว่าง' : 'ไม่ว่าง';
                                 ?>
@@ -1047,12 +1067,10 @@
                                         data-status="<?= $statusClass ?>"
                                         <?= $available ? '' : 'disabled' ?>>
                                         <div class="table-name">โต๊ะ<?= (int)$tb['tableId'] ?></div>
-
                                         <div class="table-status"><span class="status-dot"></span><?= $label ?></div>
                                     </button>
                                 <?php endforeach; ?>
                             </div>
-
                             <p>เลือกแล้ว: <strong id="picked">-</strong></p>
                             <input type="hidden" name="table_id" id="table_id">
                         </div>
@@ -1103,22 +1121,24 @@
                 var val = "";
                 const qInput = document.querySelector('input[name="q"]');
                 qInput.addEventListener('input', () => {
-                val = qInput.value.trim();
+                    val = qInput.value.trim();
                 });
 
-                const searchBgs = document.getElementById('searchBg');
+                const searchBg = document.getElementById('searchBg');
                 const sc_title = document.getElementById('sc-title');
-                const vrsearch = searchBgs.dataset.searchbg || ""; // ค่า "ที่ซ่อน" ใน tag ดึงมา
+                const vrsearch = searchBg.dataset.searchbg || ""; // ค่า "ที่ซ่อน" ใน tag ดึงมา
+
                 // const bdid = trigger.dataset.bdid || "";
                 function search_Bg() {
-                    if (vrsearch === val) {
+                    if (vrsearch == val) {
                         console.log("พบข้อูล")
                         sc_title.textContent = val;
-                        console.log(sc_title.textContent)
-                    }else{
-                        console.log("ไม่พบข้อมูล")
-                        console.log(vrsearch)
-                        console.log(val)
+                        console.log(sc_title.textContent);
+                    } else {
+                        console.log("ไม่พบข้อมูล");
+                        console.log("งับๆ");
+                        console.log(sc_title.textContent);
+
                     }
                 }
             </script>
@@ -1133,12 +1153,11 @@
 
                         // เคลียร์ของเดิม
                         el.textContent = '';
-
                         // สร้างองค์ประกอบใหม่
                         const dot = document.createElement('span');
                         dot.className = 'dot';
                         const label = document.createElement('span');
-
+                        label.className = 'state-label';
                         if (n === 1) {
                             el.classList.add('is-free');
                             label.textContent = 'ว่าง';
@@ -1148,15 +1167,11 @@
                         } else {
                             label.textContent = raw || '—'; // กรณีไม่ใช่ 0/1
                         }
-
                         el.append(dot, label);
                     });
                 });
             </script>
             <!-- end show avilible -->
-
-
-
 
 
 
@@ -1171,9 +1186,6 @@
                     let nextBtn = popupNode.querySelector('.next-btn');
                     let currenIndex = 0;
                     const titleEl = popupNode.querySelector("#popup-title");
-
-
-
 
 
                     function showStep(i) {
@@ -1194,97 +1206,99 @@
                             nextBtn.textContent = (i === steps.length - 1) ? 'Book' : 'next';
                         }
 
+
                         // สลับหน้า โต๊ะ
                         // if (titleEl) {
                         //     titleEl.textContent = (i === 1) ?
                         //         'กรุณาเลือกโต๊ะที่ต้องการนั่ง' :
                         //         (titleEl.dataset.baseTitle || titleEl.textContent);
                         // }
-
                     }
-                    if (nextBtn) {
-                        nextBtn.addEventListener('click', () => {
-                            if (currenIndex < steps.length - 1) {
-                                currenIndex += 1;
-                                showStep(currenIndex);
 
-                            } else {
-                                confirmToForm();
-                                document.getElementById('confirmForm').requestSubmit();
-                                closePopup();
+
+                                if (nextBtn) {
+                                    nextBtn.addEventListener('click', () => {
+                                        if (currenIndex < steps.length - 1) {
+                                            currenIndex += 1;
+                                            showStep(currenIndex);
+
+                                        } else {
+                                            confirmToForm();
+                                            document.getElementById('confirmForm').requestSubmit();
+                                            closePopup();
+                                        }
+                                    });
+                                }
+
+                                if (prevBtn) {
+                                    prevBtn.addEventListener('click', () => {
+                                        if (currenIndex > 0) {
+                                            currenIndex -= 1;
+
+                                            showStep(currenIndex);
+                                        }
+                                    });
+                                }
+
+                                function openPopup() {
+                                    popupNode.classList.add("active");
+                                    currenIndex = 0;
+                                    confirmToForm()
+                                    if (steps.length) showStep(0);
+                                }
+
+                                function closePopup() {
+                                    popupNode.classList.remove("active");
+                                }
+                                overlay.addEventListener("click", closePopup);
+                                closeBtn.addEventListener("click", closePopup);
+                                return openPopup;
                             }
-                        });
-                    }
 
-                    if (prevBtn) {
-                        prevBtn.addEventListener('click', () => {
-                            if (currenIndex > 0) {
-                                currenIndex -= 1;
+                            const openPopup = createPopup("#popup");
 
-                                showStep(currenIndex);
-                            }
-                        });
-                    }
+                            // ===== อัปเดตข้อมูล + เปิด popup เมื่อคลิกการ์ด =====
+                            document.addEventListener("click", (e) => {
+                                const trigger = e.target.closest(".open-popup");
+                                if (!trigger) return;
 
-                    function openPopup() {
-                        popupNode.classList.add("active");
-                        currenIndex = 0;
-                        confirmToForm()
-                        if (steps.length) showStep(0);
-                    }
+                                const name = trigger.dataset.bgname || "";
+                                const desc = trigger.dataset.bddescription || "";
+                                const img = trigger.dataset.image || "";
+                                const age = trigger.dataset.age || "";
+                                const time = trigger.dataset.time || "";
+                                const bdid = trigger.dataset.bdid || "";
+                                const bgid = trigger.dataset.bgid || "";
+                                // const table = trigger.dataset.data-table-id || "";
+                                // ใส่ลง DOM
+                                const titleEl = document.getElementById("popup-title");
+                                const descEl = document.getElementById("popup-desc");
+                                const ageEl = document.getElementById("popup-age");
+                                const imgEl = document.getElementById("popup-image");
+                                const timeEl = document.getElementById("popup-time");
+                                const bdidEl = document.getElementById("popup-bdid");
+                                const bgidEl = document.getElementById("popup-bgid");
 
-                    function closePopup() {
-                        popupNode.classList.remove("active");
-                    }
-                    overlay.addEventListener("click", closePopup);
-                    closeBtn.addEventListener("click", closePopup);
-                    return openPopup;
-                }
+                                if (titleEl) titleEl.textContent = name;
+                                if (descEl) descEl.textContent = desc;
+                                if (ageEl) ageEl.textContent = age;
+                                if (timeEl) timeEl.textContent = time;
+                                if (bdidEl) bdidEl.textContent = bdid;
+                                if (bgidEl) bgidEl.textContent = bgid;
 
-                const openPopup = createPopup("#popup");
+                                if (imgEl) {
+                                    if (img) {
+                                        imgEl.src = img;
+                                        imgEl.alt = name || "boardgame";
+                                        imgEl.style.display = "block";
+                                    } else {
+                                        imgEl.removeAttribute("src");
+                                        imgEl.style.display = "none";
+                                    }
+                                }
 
-                // ===== อัปเดตข้อมูล + เปิด popup เมื่อคลิกการ์ด =====
-                document.addEventListener("click", (e) => {
-                    const trigger = e.target.closest(".open-popup");
-                    if (!trigger) return;
-
-                    const name = trigger.dataset.bgname || "";
-                    const desc = trigger.dataset.bddescription || "";
-                    const img = trigger.dataset.image || "";
-                    const age = trigger.dataset.age || "";
-                    const time = trigger.dataset.time || "";
-                    const bdid = trigger.dataset.bdid || "";
-                    const bgid = trigger.dataset.bgid || "";
-                    // const table = trigger.dataset.data-table-id || "";
-                    // ใส่ลง DOM
-                    const titleEl = document.getElementById("popup-title");
-                    const descEl = document.getElementById("popup-desc");
-                    const ageEl = document.getElementById("popup-age");
-                    const imgEl = document.getElementById("popup-image");
-                    const timeEl = document.getElementById("popup-time");
-                    const bdidEl = document.getElementById("popup-bdid");
-                    const bgidEl = document.getElementById("popup-bgid");
-
-                    if (titleEl) titleEl.textContent = name;
-                    if (descEl) descEl.textContent = desc;
-                    if (ageEl) ageEl.textContent = age;
-                    if (timeEl) timeEl.textContent = time;
-                    if (bdidEl) bdidEl.textContent = bdid;
-                    if (bgidEl) bgidEl.textContent = bgid;
-
-                    if (imgEl) {
-                        if (img) {
-                            imgEl.src = img;
-                            imgEl.alt = name || "boardgame";
-                            imgEl.style.display = "block";
-                        } else {
-                            imgEl.removeAttribute("src");
-                            imgEl.style.display = "none";
-                        }
-                    }
-
-                    openPopup(); // เปิด popup หลังอัปเดตข้อมูลเรียบร้อย
-                });
+                                openPopup(); // เปิด popup หลังอัปเดตข้อมูลเรียบร้อย
+                            });
             </script>
             <script>
                 // ไฮไลต์การ์ดโต๊ะที่ผู้ใช้เลือก + เปิดปุ่ม next เมื่อเลือกแล้ว
@@ -1308,6 +1322,7 @@
 
                         // เปิดปุ่ม next
                         const nextBtnEl = document.querySelector('#popup .next-btn');
+
                         if (nextBtnEl) nextBtnEl.disabled = false;
                     });
                 }
@@ -1378,6 +1393,201 @@
                 }
             </script>
 
+
+
+            <!-- //json ranking -->
+            <script>
+                async function loadRanking() {
+                    try {
+                        const res = await fetch('ranking.php', {
+                            cache: 'no-store'
+                        });
+                        console.log('HTTP status:', res.status);
+                        const json = await res.json(); // <- อ่านครั้งเดียวพอ
+                        const object = json.data;
+                        console.log('json:', json);
+                        const top = object[0];
+                        // ตรวจเช็ค path
+                        function toSrc(p) {
+                            if (!p) return '';
+                            return /^https?:\/\//.test(p) ? p : ('/BookingBordgame/' + p.replace(/^\/+/, ''));
+                        }
+                        const img = document.getElementById('hot-top-img');
+                        // img.src = toSrc(top.image_url);
+                        // console.log(top.image_url);
+                        // if (!json.ok) return;
+                        // const data = json.data || [];
+                        // console.table(data);
+                    } catch (err) {
+                        console.error('loadRanking error:', err);
+                    }
+                }
+                loadRanking();
+            </script>
+
+            <!-- //loaded stateBg -->
+            <script>
+                async function loaded_stateBg() {
+                    try {
+                        const res = await fetch('realtimeState.php', {
+                            cache: 'no-store'
+                        });
+                        console.log('HTTP status:', res.status);
+                        const json = await res.json(); // <- อ่านครั้งเดียวพอ
+                        console.log('json:', json.stateBg[0]);
+
+                        // const test = state_Object[0];
+                        //ตรวจเช็ค path
+                        // function toSrc(p) {
+                        //     if (!p) return '';
+                        //     return /^https?:\/\//.test(p) ? p : ('/BookingBordgame/' + p.replace(/^\/+/, ''));
+                        // }
+                        // const img = document.getElementById('hot-top-img');
+                        // img.src = toSrc(top.image_url);
+                        // console.log(top.image_url);
+                        // if (!json.ok) return;
+                        // const data = json.data || [];
+                        // console.table(data);
+
+                    } catch (err) {
+                        console.error('loadRanking error:', err);
+                    }
+                }
+                loaded_stateBg();
+            </script>
+
+
+
+            <!-- //ดึง state 2-3 วินาที -->
+            <script>
+                function applyState(el, state) {
+                    const lab = el.querySelector('.state-label');
+                    el.classList.remove('is-free', 'is-taken');
+                    if (state === 1) {
+                        el.classList.add('is-free');
+                        if (lab) lab.textContent = 'ว่าง';
+                    } else if (state === 0) {
+                        el.classList.add('is-taken');
+                        if (lab) lab.textContent = 'ไม่ว่าง';
+                    } else {
+                        if (lab) lab.textContent = '—';
+                    }
+                }
+
+                async function refreshStates() {
+                    try {
+                        const res = await fetch('/BookingBordgame/homepage/booking/realtimeState.php', {
+                            cache: 'no-store'
+                        });
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+                        const json = await res.json(); // { ok, stateBg: [ {bgId, state}, ... ] }
+                        if (!json.ok) throw new Error(json.error || 'unknown error');
+
+                        const map = Object.fromEntries(json.stateBg.map(x => [String(x.bgId), Number(x.state)]));
+
+                        document.querySelectorAll('.showavalible').forEach(el => {
+                            const bgid = el.dataset.bgid || el.closest('[data-bgid]')?.dataset.bgid;
+                            if (!bgid) return;
+                            const st = map[String(bgid)];
+                            if (st === 0 || st === 1) applyState(el, st);
+                        });
+                    } catch (err) {
+                        console.error('refreshStates error:', err);
+                    }
+                }
+
+                // โหลดครั้งแรกและรีเฟรชทุก 3 วิ
+                refreshStates();
+                setInterval(refreshStates, 3000);
+
+                // ถ้าเพิ่งกลับมาโฟกัสหน้าจอ ให้รีเฟรชทันที
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) refreshStates();
+                });
+
+                // TIP: ถ้ามีปุ่มยืม/คืนที่ยิง AJAX สำเร็จ ให้เรียก refreshStates() ทันทีหลังอัปเดต
+            </script>
+
+
+            <!-- table -->
+            <script>
+                function initStatusLabels(scope = document) {
+                    scope.querySelectorAll('.table-card .table-status').forEach(box => {
+                        if (!box.querySelector('.status-label')) {
+                            const label = document.createElement('span');
+                            label.className = 'status-label';
+                            // ถ้ามีข้อความเก่า "ว่าง/ไม่ว่าง" เป็น text node ให้ห่อแทนที่
+                            const txt = Array.from(box.childNodes)
+                                .find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim() !== '');
+                            if (txt) {
+                                label.textContent = txt.textContent.trim();
+                                box.replaceChild(label, txt);
+                            } else {
+                                box.appendChild(label);
+                            }
+                        }
+                    });
+                }
+            </script>
+
+
+
+            <!-- //ดึงโต๊ะทุกๆ 2-3 วินาที -->
+            <script>
+                const API = '/BookingBordgame/homepage/booking/tables_status.php';
+
+                function setTableStatus(card, status) {
+                    const box = card.querySelector('.table-status') || card;
+                    initStatusLabels(card); // แน่ใจว่ามี label แล้ว
+                    const label = box.querySelector('.status-label');
+
+                    card.classList.remove('free', 'taken', 'held');
+                    card.classList.add(status);
+
+                    label.textContent =
+                        status === 'free' ? 'ว่าง' :
+                        status === 'taken' ? 'ไม่ว่าง' :
+                        status === 'held' ? 'กำลังจอง' : '—';
+
+                    card.disabled = (status !== 'free');
+                    card.dataset.status = status;
+                }
+
+                async function refreshTables() {
+                    try {
+                        const res = await fetch(API + '?ts=' + Date.now(), {
+                            cache: 'no-store'
+                        });
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        const json = await res.json(); // { ok:true, tables:[{tableId,status}] }
+                        if (json.ok === false) throw new Error(json.error || 'server error');
+
+                        const map = new Map((json.tables || []).map(t => [String(t.tableId), t.status]));
+
+                        //  สร้าง label ให้ครบก่อน แล้วอัปเดต "ทุกใบ"
+                        initStatusLabels();
+                        document.querySelectorAll('.table-card[data-table-id]').forEach(card => {
+                            const id = card.dataset.tableId;
+                            const next = map.get(String(id));
+                            if (!next) return; // ไม่มีใน JSON ก็ข้าม
+                            setTableStatus(card, next); // ⬅️ อัปเดตทุกครั้ง
+                        });
+                    } catch (e) {
+                        console.error('refreshTables error:', e);
+                    }
+                }
+
+                // โหลดครั้งแรก + ทุก 3 วิ + กลับมาโฟกัสหน้า
+                document.addEventListener('DOMContentLoaded', () => {
+                    initStatusLabels();
+                    refreshTables();
+                });
+                setInterval(refreshTables, 3000);
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) refreshTables();
+                });
+            </script>
 
         </aside>
 
