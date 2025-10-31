@@ -37,6 +37,14 @@
             font-family: Kanit;
         }
 
+        /* ซ่อน ปุ่ม next */
+        .next-btn[disabled] {
+            opacity: .5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+
         /* startpopup */
         .center {
             position: absolute;
@@ -1176,26 +1184,60 @@
 
 
             <script>
-                // ===== popup core (ของเดิม) =====
-                function createPopup(id) {
-                    let popupNode = document.querySelector(id);
-                    let overlay = popupNode.querySelector(".overlay");
-                    let closeBtn = popupNode.querySelector(".close-btn");
-                    let prevBtn = popupNode.querySelector(".perv-btn");
-                    let steps = Array.from(popupNode.querySelectorAll('.step'));
-                    let nextBtn = popupNode.querySelector('.next-btn');
-                    let currenIndex = 0;
-                    const titleEl = popupNode.querySelector("#popup-title");
+                /* ---------- Helpers ---------- */
+                function isFreeFromDom(bgid) {
+                    const n = document.querySelector(`.showavalible[data-bgid="${bgid}"]`) ||
+                        document.querySelector(`[data-bgid="${bgid}"] .showavalible`);
+                    return !!n && n.classList.contains('is-free'); // true = ว่าง (state=1)
+                }
 
+                let USER_ACTIVE = {
+                    has: false
+                };
+
+                async function loadUserActive() {
+                    try {
+                        const r = await fetch('/BookingBordgame/homepage/booking/user_active_status.php', {
+                            cache: 'no-store'
+                        });
+                        const j = await r.json();
+                        USER_ACTIVE.has = !!(j && j.ok && j.hasActive);
+                    } catch (_) {
+                        USER_ACTIVE.has = false; // fallback: ถือว่าไม่มี active เพื่อไม่บล็อกผิด ๆ
+                    }
+                }
+                const test = true;
+                function canGo(stepIndex) {
+                    const popup = document.getElementById('popup');
+                    const bgid = popup?.dataset.currentBgid;
+                    if (stepIndex === 0) {
+                        if (USER_ACTIVE.has){
+                            console.log("test string");
+                            return false;} // ถ้ามียืมค้าง 
+                        // บล็อกทั้ง flow
+                        
+                        return !!bgid && isFreeFromDom(bgid); // และเกมใบนี้ต้อง "ว่าง" ใน DOM
+                    }
+                    return true;
+                }
+
+                /* ---------- Popup ---------- */
+                function createPopup(id) {
+                    const popupNode = document.querySelector(id);
+                    const overlay = popupNode.querySelector(".overlay");
+                    const closeBtn = popupNode.querySelector(".close-btn");
+                    const prevBtn = popupNode.querySelector(".prev-btn") || popupNode.querySelector(".perv-btn"); // เผื่อสะกดเดิม
+                    const steps = Array.from(popupNode.querySelectorAll('.step'));
+                    const nextBtn = popupNode.querySelector('.next-btn');
+                    let currenIndex = 0;
 
                     function showStep(i) {
                         steps.forEach((el, idx) => {
                             if (idx === i) {
-                                if (closeBtn) closeBtn.hidden = (i !== 0); // หน้าแรก: โชว์ close / หน้าอื่น: ซ่อน
+                                if (closeBtn) closeBtn.hidden = (i !== 0);
                                 if (prevBtn) prevBtn.hidden = (i === 0);
                                 el.hidden = false;
                                 el.classList.add('is-active');
-
                             } else {
                                 el.hidden = true;
                                 el.classList.remove('is-active');
@@ -1204,102 +1246,118 @@
 
                         if (nextBtn) {
                             nextBtn.textContent = (i === steps.length - 1) ? 'Book' : 'next';
+                            const ok = canGo(i);
+                            nextBtn.disabled = !ok;
+
+                            nextBtn.setAttribute('aria-disabled', ok ? 'false' : 'true');
                         }
-
-
-                        // สลับหน้า โต๊ะ
-                        // if (titleEl) {
-                        //     titleEl.textContent = (i === 1) ?
-                        //         'กรุณาเลือกโต๊ะที่ต้องการนั่ง' :
-                        //         (titleEl.dataset.baseTitle || titleEl.textContent);
-                        // }
                     }
 
+                    if (nextBtn) {
+                        nextBtn.addEventListener('click', async () => {
+                            // เช็คสด ๆ ที่สเต็ปแรกกันกรณีกดเร็วกว่า fetch
+                            if (currenIndex === 0) {
+                                nextBtn.disabled = true;
+                                nextBtn.setAttribute('aria-busy', 'true');
+                                await loadUserActive(); // ดึงสถานะล่าสุด "ตอนจะไปต่อ"
+                                nextBtn.removeAttribute('aria-busy');
 
-                                if (nextBtn) {
-                                    nextBtn.addEventListener('click', () => {
-                                        if (currenIndex < steps.length - 1) {
-                                            currenIndex += 1;
-                                            showStep(currenIndex);
-
-                                        } else {
-                                            confirmToForm();
-                                            document.getElementById('confirmForm').requestSubmit();
-                                            closePopup();
-                                        }
-                                    });
+                                if (!canGo(0)) { // ยังไม่ผ่าน → รีเซ็ตปุ่ม/สเต็ปและไม่ไปต่อ
+                                    showStep(0);
+                                    return;
                                 }
-
-                                if (prevBtn) {
-                                    prevBtn.addEventListener('click', () => {
-                                        if (currenIndex > 0) {
-                                            currenIndex -= 1;
-
-                                            showStep(currenIndex);
-                                        }
-                                    });
-                                }
-
-                                function openPopup() {
-                                    popupNode.classList.add("active");
-                                    currenIndex = 0;
-                                    confirmToForm()
-                                    if (steps.length) showStep(0);
-                                }
-
-                                function closePopup() {
-                                    popupNode.classList.remove("active");
-                                }
-                                overlay.addEventListener("click", closePopup);
-                                closeBtn.addEventListener("click", closePopup);
-                                return openPopup;
                             }
 
-                            const openPopup = createPopup("#popup");
+                            if (currenIndex < steps.length - 1) {
+                                currenIndex += 1;
+                                showStep(currenIndex);
+                            } else {
+                                // สเต็ปสุดท้ายกดยืนยัน
+                                if (typeof confirmToForm === 'function') confirmToForm();
+                                const f = document.getElementById('confirmForm');
+                                if (f) f.requestSubmit();
+                                closePopup();
+                            }
+                        });
+                    }
 
-                            // ===== อัปเดตข้อมูล + เปิด popup เมื่อคลิกการ์ด =====
-                            document.addEventListener("click", (e) => {
-                                const trigger = e.target.closest(".open-popup");
-                                if (!trigger) return;
+                    if (prevBtn) {
+                        prevBtn.addEventListener('click', () => {
+                            if (currenIndex > 0) {
+                                currenIndex -= 1;
+                                showStep(currenIndex);
+                            }
+                        });
+                    }
 
-                                const name = trigger.dataset.bgname || "";
-                                const desc = trigger.dataset.bddescription || "";
-                                const img = trigger.dataset.image || "";
-                                const age = trigger.dataset.age || "";
-                                const time = trigger.dataset.time || "";
-                                const bdid = trigger.dataset.bdid || "";
-                                const bgid = trigger.dataset.bgid || "";
-                                // const table = trigger.dataset.data-table-id || "";
-                                // ใส่ลง DOM
-                                const titleEl = document.getElementById("popup-title");
-                                const descEl = document.getElementById("popup-desc");
-                                const ageEl = document.getElementById("popup-age");
-                                const imgEl = document.getElementById("popup-image");
-                                const timeEl = document.getElementById("popup-time");
-                                const bdidEl = document.getElementById("popup-bdid");
-                                const bgidEl = document.getElementById("popup-bgid");
+                    function openPopup() {
+                        popupNode.classList.add("active");
+                        currenIndex = 0;
+                        if (typeof confirmToForm === 'function') confirmToForm();
+                        showStep(0);
+                    }
 
-                                if (titleEl) titleEl.textContent = name;
-                                if (descEl) descEl.textContent = desc;
-                                if (ageEl) ageEl.textContent = age;
-                                if (timeEl) timeEl.textContent = time;
-                                if (bdidEl) bdidEl.textContent = bdid;
-                                if (bgidEl) bgidEl.textContent = bgid;
+                    function closePopup() {
+                        popupNode.classList.remove("active");
+                    }
 
-                                if (imgEl) {
-                                    if (img) {
-                                        imgEl.src = img;
-                                        imgEl.alt = name || "boardgame";
-                                        imgEl.style.display = "block";
-                                    } else {
-                                        imgEl.removeAttribute("src");
-                                        imgEl.style.display = "none";
-                                    }
-                                }
+                    overlay?.addEventListener("click", closePopup);
+                    closeBtn?.addEventListener("click", closePopup);
 
-                                openPopup(); // เปิด popup หลังอัปเดตข้อมูลเรียบร้อย
-                            });
+                    return openPopup;
+                }
+
+                const openPopup = createPopup("#popup");
+
+                /* ---------- เปิด popup เมื่อคลิกการ์ด (รอสถานะก่อน) ---------- */
+                document.addEventListener("click", async (e) => {
+                    const trigger = e.target.closest(".open-popup");
+                    if (!trigger) return;
+
+                    const name = trigger.dataset.bgname || "";
+                    const desc = trigger.dataset.bddescription || "";
+                    const img = trigger.dataset.image || "";
+                    const age = trigger.dataset.age || "";
+                    const time = trigger.dataset.time || "";
+                    const bdid = trigger.dataset.bdid || "";
+                    const bgid = trigger.dataset.bgid || "";
+
+                    // ใส่ลง DOM
+                    const titleEl = document.getElementById("popup-title");
+                    const descEl = document.getElementById("popup-desc");
+                    const ageEl = document.getElementById("popup-age");
+                    const imgEl = document.getElementById("popup-image");
+                    const timeEl = document.getElementById("popup-time");
+                    const bdidEl = document.getElementById("popup-bdid");
+                    const bgidEl = document.getElementById("popup-bgid");
+
+                    if (titleEl) titleEl.textContent = name;
+                    if (descEl) descEl.textContent = desc;
+                    if (ageEl) ageEl.textContent = age;
+                    if (timeEl) timeEl.textContent = time;
+                    if (bdidEl) bdidEl.textContent = bdid;
+                    if (bgidEl) bgidEl.textContent = bgid;
+
+                    if (imgEl) {
+                        if (img) {
+                            imgEl.src = img;
+                            imgEl.alt = name || "boardgame";
+                            imgEl.style.display = "block";
+                        } else {
+                            imgEl.removeAttribute("src");
+                            imgEl.style.display = "none";
+                        }
+                    }
+
+                    // เก็บ bgid ไว้ใน popup สำหรับ canGo()
+                    const popup = document.getElementById('popup');
+                    if (popup) popup.dataset.currentBgid = String(bgid);
+                    // *** สำคัญ: รอสถานะล่าสุดก่อนเปิด popup ***
+                    await loadUserActive();
+                    openPopup();
+                });
             </script>
+
             <script>
                 // ไฮไลต์การ์ดโต๊ะที่ผู้ใช้เลือก + เปิดปุ่ม next เมื่อเลือกแล้ว
                 let selectedTableId = null;

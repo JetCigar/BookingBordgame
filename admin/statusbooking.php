@@ -126,9 +126,7 @@ $doneBkd = filter_input(INPUT_GET, 'done_bkd', FILTER_VALIDATE_INT);
             </div>
         </div>
     </div>
-
 </div>
-
 <?php
 mysqli_close($conn);
 include('includes/scripts.php');
