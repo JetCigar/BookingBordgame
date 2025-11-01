@@ -14,6 +14,7 @@ if (!$bkdId || !$bgId || !$tableId) {
   exit;
 }
 
+
 try {
   // เริ่มทรานแซคชัน
   mysqli_begin_transaction($conn, MYSQLI_TRANS_START_READ_WRITE);
@@ -43,6 +44,7 @@ try {
     header('Location: statusbooking.php?msg=ถือว่าคืนแล้ว(มีการยืมครั้งใหม่)&done_bkd='.$bkdId);
     exit;
   }
+
 
   // 3) แถวนี้ยังเป็นล่าสุดจริง ๆ → ปล่อยเกม/โต๊ะ
   //    ใช้ WHERE ... AND state<>1 เพื่อให้ idempotent (กดซ้ำก็ไม่พัง)

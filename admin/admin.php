@@ -96,7 +96,7 @@ if(isset($_POST['update_state'])) {
                                 </thead>
                                 <tbody>
                                     <?php
-                                    // 🚩 ปรับปรุง QUERY เพื่อ JOIN ตาราง bordgamedescription และดึง image_url
+                                    // ปรับปรุง QUERY เพื่อ JOIN ตาราง bordgamedescription และดึง image_url
                                     $query = "
                                         SELECT 
                                             bg.*, 
@@ -135,7 +135,7 @@ if(isset($_POST['update_state'])) {
                                         echo "<td>".htmlspecialchars($row['bdId'])."</td>";
                                         echo "<td>".htmlspecialchars($row['btId'])."</td>";
                                         
-                                        // 🚩 คอลัมน์สถานะ (State) - เป็น Dropdown Form
+                                        // คอลัมน์สถานะ (State) - เป็น Dropdown Form
                                         echo "<td style='min-width: 150px;'>";
                                         echo "<form method='post' action='admin.php' class='d-flex align-items-center'>";
                                         echo "<input type='hidden' name='bgid' value='".htmlspecialchars($row['bgid'])."'>";
@@ -150,7 +150,7 @@ if(isset($_POST['update_state'])) {
                                         echo "</select>";
                                         echo "</td>";
                                         
-                                        // 🚩 คอลัมน์ดำเนินการ
+                                        // คอลัมน์ดำเนินการ
                                         echo "<td>";
                                         echo "<button type='submit' name='update_state' class='btn btn-primary btn-sm'>อัปเดต</button>";
                                         echo "</form>";

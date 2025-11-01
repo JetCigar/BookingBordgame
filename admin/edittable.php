@@ -22,7 +22,7 @@ if(isset($_POST['add'])) {
     $table_id = $_POST['tableId']; // รับ tableId ที่ผู้ใช้กรอกสำหรับเพิ่มใหม่
     $state = $_POST['state'] ?? 1; 
     
-    // 🚩 แก้ไข: INSERT ข้อมูลเฉพาะ tableId และ state
+    //  แก้ไข: INSERT ข้อมูลเฉพาะ tableId และ state
     $stmt = $conn->prepare("INSERT INTO tableroom (tableId, state) VALUES (?, ?)");
     $stmt->bind_param("ii", $table_id, $state);
 
@@ -56,7 +56,7 @@ $edit_row = null;
 if(isset($_GET['edit'])) {
     $table_id = $_GET['edit'];
     
-    // 🚩 แก้ไข: ดึงข้อมูล tableId และ state เท่านั้น
+    // แก้ไข: ดึงข้อมูล tableId และ state เท่านั้น
     $stmt = $conn->prepare("SELECT tableId, state FROM tableroom WHERE tableId=?");
     $stmt->bind_param("i", $table_id);
     $stmt->execute();
@@ -70,7 +70,7 @@ if(isset($_POST['update'])) {
     $table_id = $_POST['tableId'];
     $state = $_POST['state'];
     
-    // 🚩 แก้ไข: UPDATE ข้อมูลเฉพาะ state
+    // แก้ไข: UPDATE ข้อมูลเฉพาะ state
     $query = "UPDATE tableroom SET state=? WHERE tableId=?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("ii", $state, $table_id);
@@ -143,7 +143,7 @@ if(isset($_POST['update'])) {
                     </thead>
                     <tbody>
                         <?php
-                        // 🚩 แก้ไข: SELECT ข้อมูลเฉพาะ tableId และ state
+                        //  แก้ไข: SELECT ข้อมูลเฉพาะ tableId และ state
                         $query = "SELECT tableId, state FROM tableroom ORDER BY tableId";
                         $result = mysqli_query($conn, $query);
                         
